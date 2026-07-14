@@ -1,11 +1,25 @@
 using System.Windows;
 
-namespace HelpDesk_System.Windows;
-
-public partial class RegisterWindow : Window
+namespace HelpDesk_System.Windows
 {
-    public RegisterWindow()
+    public partial class RegisterWindow : Window
     {
-        InitializeComponent();
+        public RegisterWindow()
+        {
+            InitializeComponent();
+        }
+
+        private void OpenLoginButton_Click(object sender, RoutedEventArgs e)
+        {
+            LoginWindow loginWindow = new LoginWindow();
+            loginWindow.Show();
+
+            Close();
+        }
+
+        private void ExitButton_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
     }
 }
