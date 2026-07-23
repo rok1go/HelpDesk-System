@@ -1,4 +1,4 @@
-﻿namespace HelpDesk_System.Models;
+﻿namespace HelpDesk_System.Models.Enums;
 
 public enum UserRole
 {
