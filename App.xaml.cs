@@ -1,13 +1,52 @@
-﻿using System.Configuration;
-using System.Data;
+﻿using HelpDesk_System.Db;
+using HelpDesk_System.Windows;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System.Windows;
 
 namespace HelpDesk_System;
 
-/// <summary>
-/// Interaction logic for App.xaml
-/// </summary>
 public partial class App : Application
 {
-}
+    private readonly IHost _host;
 
+    public App()
+    {
+        _host = Host.CreateDefaultBuilder()
+            .ConfigureServices((context, services) =>
+            {
+                services.AddDbContextFactory<HelpDeskDbContext>(options =>
+                    options.UseNpgsql(
+                        context.Configuration.GetConnectionString("DefaultConnection")
+                    )
+                );
+
+                services.AddSingleton<DbInitializer>();
+                services.AddTransient<LoginWindow>();
+            })
+            .Build();
+    }
+    protected override async void OnStartup(StartupEventArgs e)
+    {
+        await _host.StartAsync();
+
+        var dbInitializer = _host.Services.GetRequiredService<DbInitializer>();
+        await dbInitializer.InitializeAsync();
+
+        _host.Services
+            .GetRequiredService<LoginWindow>()
+            .Show();
+
+        base.OnStartup(e);
+    }
+
+    protected override async void OnExit(ExitEventArgs e)
+    {
+        await _host.StopAsync();
+        _host.Dispose();
+
+        base.OnExit(e);
+    }
+}
