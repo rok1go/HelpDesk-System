@@ -7,6 +7,10 @@ namespace HelpDesk_System.Windows
         public RegisterWindow()
         {
             InitializeComponent();
+
+            Width = SystemParameters.WorkArea.Width * 0.8;
+            Height = SystemParameters.WorkArea.Height * 0.8;
+            WindowStartupLocation = WindowStartupLocation.CenterScreen;
         }
 
         private void OpenLoginButton_Click(object sender, RoutedEventArgs e)
