@@ -49,6 +49,13 @@
 
         <!-- Text -->
 
+        <Style x:Key="AuthErrorTextStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#DC2626"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Margin" Value="0,5,0,0"/>
+            <Setter Property="Visibility" Value="Collapsed"/>
+        </Style>
+
         <Style x:Key="AuthTitleTextStyle" TargetType="TextBlock">
             <Setter Property="FontSize" Value="34"/>
             <Setter Property="FontWeight" Value="Bold"/>

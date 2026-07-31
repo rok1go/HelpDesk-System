@@ -15,9 +15,6 @@ namespace HelpDesk_System.Windows
 
         private void OpenLoginButton_Click(object sender, RoutedEventArgs e)
         {
-            LoginWindow loginWindow = new LoginWindow();
-            loginWindow.Show();
-
             Close();
         }
 

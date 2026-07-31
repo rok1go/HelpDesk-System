@@ -1,4 +1,5 @@
 ﻿using HelpDesk_System.Db;
+using HelpDesk_System.Services;
 using HelpDesk_System.Windows;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -25,6 +26,7 @@ public partial class App : Application
 
                 services.AddSingleton<DbInitializer>();
                 services.AddTransient<LoginWindow>();
+                services.AddTransient<AuthService>();
             })
             .Build();
     }
