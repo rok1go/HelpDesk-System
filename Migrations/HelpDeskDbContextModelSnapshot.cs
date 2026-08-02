@@ -33,8 +33,11 @@ namespace HelpDesk_System.Migrations
                     b.Property<int>("AffectedPeople")
                         .HasColumnType("integer");
 
-                    b.Property<int>("AuthorId")
-                        .HasColumnType("integer");
+					b.Property<int>("AuthorId")
+						.HasColumnType("integer");
+
+					b.Property<int?>("AssignedAdminId")
+						.HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -61,7 +64,9 @@ namespace HelpDesk_System.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AuthorId");
+					b.HasIndex("AuthorId");
+
+					b.HasIndex("AssignedAdminId");
 
                     b.ToTable("Tickets");
                 });
@@ -128,15 +133,22 @@ namespace HelpDesk_System.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("HelpDesk_System.Models.Ticket", b =>
-                {
-                    b.HasOne("HelpDesk_System.Models.User", "Author")
-                        .WithMany("Tickets")
+			modelBuilder.Entity("HelpDesk_System.Models.Ticket", b =>
+				{
+					b.HasOne("HelpDesk_System.Models.User", "AssignedAdmin")
+						.WithMany("AssignedTickets")
+						.HasForeignKey("AssignedAdminId")
+						.OnDelete(DeleteBehavior.SetNull);
+
+					b.HasOne("HelpDesk_System.Models.User", "Author")
+						.WithMany("Tickets")
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+						.IsRequired();
 
-                    b.Navigation("Author");
+					b.Navigation("AssignedAdmin");
+
+					b.Navigation("Author");
                 });
 
             modelBuilder.Entity("HelpDesk_System.Models.TicketResponse", b =>
@@ -163,10 +175,12 @@ namespace HelpDesk_System.Migrations
                     b.Navigation("Responses");
                 });
 
-            modelBuilder.Entity("HelpDesk_System.Models.User", b =>
-                {
-                    b.Navigation("Tickets");
-                });
+			modelBuilder.Entity("HelpDesk_System.Models.User", b =>
+				{
+					b.Navigation("AssignedTickets");
+
+					b.Navigation("Tickets");
+				});
 #pragma warning restore 612, 618
         }
     }
