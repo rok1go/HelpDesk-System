@@ -24,10 +24,13 @@ public partial class App : Application
                     )
                 );
 
-                services.AddSingleton<DbInitializer>();
-                services.AddTransient<LoginWindow>();
-                services.AddTransient<AuthService>();
-            })
+				services.AddSingleton<DbInitializer>();
+				services.AddSingleton<WindowNavigationService>();
+				services.AddTransient<LoginWindow>();
+				services.AddTransient<RegisterWindow>();
+				services.AddTransient<AuthService>();
+				services.AddTransient<TicketService>();
+			})
             .Build();
     }
     protected override async void OnStartup(StartupEventArgs e)

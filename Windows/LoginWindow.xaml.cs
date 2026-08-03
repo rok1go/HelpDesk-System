@@ -1,17 +1,18 @@
 using System.Windows;
-using HelpDesk_System.Models.Enums;
 using HelpDesk_System.Services;
 
 namespace HelpDesk_System.Windows
 {
-    public partial class LoginWindow : Window
-    {
-        private readonly AuthService _authService;
+	public partial class LoginWindow : Window
+	{
+		private readonly AuthService _authService;
+		private readonly WindowNavigationService _navigationService;
 
-        public LoginWindow(AuthService authService)
-        {
-            InitializeComponent();
-            _authService = authService;
+		public LoginWindow(AuthService authService, WindowNavigationService navigationService)
+		{
+			InitializeComponent();
+			_authService = authService;
+			_navigationService = navigationService;
 
             Width = SystemParameters.WorkArea.Width * 0.8;
             Height = SystemParameters.WorkArea.Height * 0.8;
@@ -55,18 +56,12 @@ namespace HelpDesk_System.Windows
                 return;
             }
 
-            Window nextWindow = user.Role == UserRole.Admin ? new AdminWindow() : new WorkerWindow();
-            nextWindow.Show();
-            Close();
-        }
+			_navigationService.OpenWorkspace(this, user);
+		}
 
-        private void OpenRegisterButton_Click(object sender, RoutedEventArgs e)
-        {
-            var registerWindow = new RegisterWindow();
-            registerWindow.Closed += (_, _) => Show();
-
-            registerWindow.Show();
-            Hide();
+		private void OpenRegisterButton_Click(object sender, RoutedEventArgs e)
+		{
+			_navigationService.OpenRegister(this);
         }
 
         private void ExitButton_Click(object sender, RoutedEventArgs e)
