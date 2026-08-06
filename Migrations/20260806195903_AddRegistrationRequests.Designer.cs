@@ -3,6 +3,7 @@ using System;
 using HelpDesk_System.Db;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HelpDesk_System.Migrations
 {
     [DbContext(typeof(HelpDeskDbContext))]
-    partial class HelpDeskDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260806195903_AddRegistrationRequests")]
+    partial class AddRegistrationRequests
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
