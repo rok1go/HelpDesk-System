@@ -11,62 +11,70 @@
             <Border Padding="35" Style="{StaticResource AuthCardStyle}">
                 <StackPanel>
                     <TextBlock Text="Help Desk"
-                               Margin="0,0,0,8"
-                               Style="{StaticResource AuthTitleTextStyle}"/>
+                            Margin="0,0,0,8"
+                            Style="{StaticResource AuthTitleTextStyle}"/>
 
-                    <TextBlock Text="Create a new account"
-                               Margin="0,0,0,30"
-                               Style="{StaticResource AuthSubtitleTextStyle}"/>
+                    <TextBlock Text="Submit a registration request"
+                            Margin="0,0,0,30"
+                            Style="{StaticResource AuthSubtitleTextStyle}"/>
 
                     <TextBlock Text="First name"
-                               Style="{StaticResource FieldLabelTextStyle}"/>
+                            Style="{StaticResource FieldLabelTextStyle}"/>
 
                     <TextBox x:Name="FirstNameTextBox"
-                             Margin="0,0,0,16"
-                             Style="{StaticResource AuthTextBoxStyle}"/>
+                            Margin="0,0,0,16"
+                            Style="{StaticResource AuthTextBoxStyle}"/>
 
                     <TextBlock Text="Last name"
-                               Style="{StaticResource FieldLabelTextStyle}"/>
+                            Style="{StaticResource FieldLabelTextStyle}"/>
 
                     <TextBox x:Name="LastNameTextBox"
-                             Margin="0,0,0,16"
-                             Style="{StaticResource AuthTextBoxStyle}"/>
+                            Margin="0,0,0,16"
+                            Style="{StaticResource AuthTextBoxStyle}"/>
 
                     <TextBlock Text="Email"
-                               Style="{StaticResource FieldLabelTextStyle}"/>
+                            Style="{StaticResource FieldLabelTextStyle}"/>
 
                     <TextBox x:Name="EmailTextBox"
-                             Margin="0,0,0,16"
-                             Style="{StaticResource AuthTextBoxStyle}"/>
+                            Margin="0,0,0,16"
+                            Style="{StaticResource AuthTextBoxStyle}"/>
 
                     <TextBlock Text="Password"
-                               Style="{StaticResource FieldLabelTextStyle}"/>
+                            Style="{StaticResource FieldLabelTextStyle}"/>
 
                     <PasswordBox x:Name="PasswordInput"
-                                 Margin="0,0,0,16"
-                                 Style="{StaticResource AuthPasswordBoxStyle}"/>
+                            Margin="0,0,0,16"
+                            Style="{StaticResource AuthPasswordBoxStyle}"/>
 
                     <TextBlock Text="Confirm password"
-                               Style="{StaticResource FieldLabelTextStyle}"/>
+                            Style="{StaticResource FieldLabelTextStyle}"/>
 
                     <PasswordBox x:Name="ConfirmPasswordInput"
-                                 Margin="0,0,0,16"
-                                 Style="{StaticResource AuthPasswordBoxStyle}"/>
+                            Margin="0,0,0,16"
+                            Style="{StaticResource AuthPasswordBoxStyle}"/>
 
-                    <TextBlock Text="Account role"
-                               Style="{StaticResource FieldLabelTextStyle}"/>
+                    <TextBlock Text="Requested role"
+                            Style="{StaticResource FieldLabelTextStyle}"/>
 
                     <ComboBox x:Name="RoleComboBox"
-                              SelectedIndex="0"
-                              Margin="0,0,0,24"
-                              Style="{StaticResource AuthComboBoxStyle}">
+                            SelectedIndex="0"
+                            Margin="0,0,0,24"
+                            Style="{StaticResource AuthComboBoxStyle}">
                         <ComboBoxItem Content="Employee"/>
                         <ComboBoxItem Content="Administrator"/>
                     </ComboBox>
 
                     <Button x:Name="RegisterButton"
-                            Content="Register"
-                            Style="{StaticResource PrimaryButtonStyle}"/>
+                            Content="Send request"
+                            Style="{StaticResource PrimaryButtonStyle}"
+                            Click="RegisterButton_Click"/>
+
+                    <TextBlock x:Name="RegistrationStatusTextBlock"
+                            FontWeight="SemiBold"
+                            TextAlignment="Center"
+                            TextWrapping="Wrap"
+                            Margin="0,12,0,0"
+                            Visibility="Collapsed"/>
 
                     <Button x:Name="OpenLoginButton"
                             Content="Already have an account? Login"

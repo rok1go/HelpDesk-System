@@ -30,7 +30,8 @@ public partial class App : Application
 				services.AddTransient<RegisterWindow>();
 				services.AddTransient<AuthService>();
 				services.AddTransient<TicketService>();
-			})
+                services.AddTransient<RegistrationRequestService>();
+            })
             .Build();
     }
     protected override async void OnStartup(StartupEventArgs e)
