@@ -6,212 +6,329 @@
 		Loaded="AdminWindow_Loaded"
         WindowStartupLocation="CenterScreen">
 
-	<Window.Resources>
-		<DataTemplate x:Key="TicketCardTemplate">
-			<Button Style="{StaticResource TicketCardButtonStyle}" Click="TicketCard_Click">
-				<Grid>
-					<Grid.RowDefinitions>
-						<RowDefinition Height="Auto"/>
-						<RowDefinition Height="Auto"/>
-						<RowDefinition Height="Auto"/>
-					</Grid.RowDefinitions>
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="Auto"/>
-						<ColumnDefinition Width="*"/>
-					</Grid.ColumnDefinitions>
+    <Window.Resources>
+        <DataTemplate x:Key="TicketCardTemplate">
+            <Button Style="{StaticResource TicketCardButtonStyle}" Click="TicketCard_Click">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-					<Border Style="{StaticResource TicketBadgeStyle}">
-						<TextBlock Text="{Binding Priority, Converter={StaticResource EnumDisplayConverter}}" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource FieldTextBrush}"/>
-					</Border>
+                    <Border Style="{StaticResource TicketBadgeStyle}">
+                        <TextBlock Text="{Binding Priority, Converter={StaticResource EnumDisplayConverter}}" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource FieldTextBrush}"/>
+                    </Border>
 
-					<TextBlock Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="13" Foreground="{StaticResource SecondaryTextBrush}">
+                    <TextBlock Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="13" Foreground="{StaticResource SecondaryTextBrush}">
 						<Run Text="{Binding Author.FirstName}"/><Run Text=" "/><Run Text="{Binding Author.LastName}"/>
-					</TextBlock>
+                    </TextBlock>
 
-					<TextBlock Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding Title}" Margin="0,11,0,8" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource MainTextBrush}" TextTrimming="CharacterEllipsis"/>
+                    <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding Title}" Margin="0,11,0,8" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource MainTextBrush}" TextTrimming="CharacterEllipsis"/>
 
-					<StackPanel Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal">
-						<TextBlock Text="{Binding Status, Converter={StaticResource EnumDisplayConverter}}" Style="{StaticResource SmallMutedTextStyle}"/>
-						<TextBlock Text="  •  " Style="{StaticResource SmallMutedTextStyle}"/>
-						<TextBlock Text="{Binding CreatedAt, StringFormat={}{0:dd.MM.yyyy HH:mm}}" Style="{StaticResource SmallMutedTextStyle}"/>
-					</StackPanel>
-				</Grid>
-			</Button>
-		</DataTemplate>
-	</Window.Resources>
+                    <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal">
+                        <TextBlock Text="{Binding Status, Converter={StaticResource EnumDisplayConverter}}" Style="{StaticResource SmallMutedTextStyle}"/>
+                        <TextBlock Text="  •  " Style="{StaticResource SmallMutedTextStyle}"/>
+                        <TextBlock Text="{Binding CreatedAt, StringFormat={}{0:dd.MM.yyyy HH:mm}}" Style="{StaticResource SmallMutedTextStyle}"/>
+                    </StackPanel>
+                </Grid>
+            </Button>
+        </DataTemplate>
 
-	<Grid Background="{StaticResource WindowBackgroundBrush}">
-		<Grid Margin="28">
-			<Grid.RowDefinitions>
-				<RowDefinition Height="Auto"/>
-				<RowDefinition Height="*"/>
-			</Grid.RowDefinitions>
+        <DataTemplate x:Key="RegistrationRequestCardTemplate">
+            <Button Style="{StaticResource TicketCardButtonStyle}" Click="RegistrationRequestCard_Click">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-			<Border Padding="24,18" Margin="0,0,0,18" Style="{StaticResource WorkspaceCardStyle}">
-				<Grid>
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="*"/>
-						<ColumnDefinition Width="Auto"/>
-						<ColumnDefinition Width="Auto"/>
-					</Grid.ColumnDefinitions>
+                    <Border Style="{StaticResource TicketBadgeStyle}">
+                        <TextBlock Text="{Binding RequestedRole, Converter={StaticResource EnumDisplayConverter}}" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource FieldTextBrush}"/>
+                    </Border>
 
-					<StackPanel VerticalAlignment="Center">
-						<TextBlock Text="Help Desk" FontSize="24" FontWeight="Bold" Foreground="{StaticResource MainTextBrush}"/>
-						<TextBlock Text="Admin workspace" Margin="0,3,0,0" Style="{StaticResource SmallMutedTextStyle}"/>
-					</StackPanel>
+                    <TextBlock Grid.Column="1" Text="{Binding CreatedAt, StringFormat={}{0:dd.MM.yyyy HH:mm}}" HorizontalAlignment="Right" VerticalAlignment="Center" Style="{StaticResource SmallMutedTextStyle}"/>
 
-					<Button Grid.Column="1" Content="Knowledge base" Margin="16,0" Style="{StaticResource SecondaryButtonStyle}" IsEnabled="False" ToolTip="Knowledge base will be added later" ToolTipService.ShowOnDisabled="True"/>
+                    <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Margin="0,11,0,5" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource MainTextBrush}">
+						<Run Text="{Binding FirstName}"/><Run Text=" "/><Run Text="{Binding LastName}"/>
+                    </TextBlock>
 
-					<Grid Grid.Column="2">
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="Auto"/>
-							<ColumnDefinition Width="Auto"/>
-						</Grid.ColumnDefinitions>
-						<StackPanel Margin="0,0,16,0" VerticalAlignment="Center">
-							<TextBlock x:Name="AdminNameText" HorizontalAlignment="Right" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource MainTextBrush}"/>
-							<TextBlock x:Name="AdminEmailText" Margin="0,3,0,0" HorizontalAlignment="Right" Style="{StaticResource SmallMutedTextStyle}"/>
-						</StackPanel>
-						<Button Grid.Column="1" Content="Logout" Style="{StaticResource OutlineButtonStyle}" Click="LogoutButton_Click"/>
-					</Grid>
-				</Grid>
-			</Border>
+                    <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Text="{Binding Email}" Style="{StaticResource SmallMutedTextStyle}" TextTrimming="CharacterEllipsis"/>
+                </Grid>
+            </Button>
+        </DataTemplate>
+    </Window.Resources>
 
-			<Grid Grid.Row="1">
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="6*"/>
-					<ColumnDefinition Width="5*"/>
-				</Grid.ColumnDefinitions>
+    <Grid Background="{StaticResource WindowBackgroundBrush}">
+        <Grid Margin="28">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-				<Border Padding="22" Margin="0,0,9,0" Style="{StaticResource WorkspaceCardStyle}">
-					<Grid>
-						<Grid.RowDefinitions>
-							<RowDefinition Height="Auto"/>
-							<RowDefinition Height="*"/>
-						</Grid.RowDefinitions>
+            <Border Padding="24,18" Margin="0,0,0,18" Style="{StaticResource WorkspaceCardStyle}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
 
-						<Grid Margin="0,0,0,18">
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="*"/>
-								<ColumnDefinition Width="Auto"/>
-							</Grid.ColumnDefinitions>
-							<StackPanel>
-								<TextBlock Text="Available tickets" Style="{StaticResource SectionTitleTextStyle}"/>
-								<TextBlock x:Name="OpenTicketsCountText" Margin="0,5,0,0" Style="{StaticResource SmallMutedTextStyle}"/>
-							</StackPanel>
-							<Button Grid.Column="1" Content="Refresh" Style="{StaticResource SecondaryButtonStyle}" Click="RefreshButton_Click"/>
-						</Grid>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="Help Desk" FontSize="24" FontWeight="Bold" Foreground="{StaticResource MainTextBrush}"/>
+                        <TextBlock Text="Admin workspace" Margin="0,3,0,0" Style="{StaticResource SmallMutedTextStyle}"/>
+                        <TextBlock x:Name="WorkspaceStatusMessageText" Margin="0,5,0,0" Style="{StaticResource WorkspaceErrorTextStyle}"/>
+                    </StackPanel>
 
-						<Grid Grid.Row="1">
-							<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-								<ItemsControl x:Name="OpenTicketsList" ItemTemplate="{StaticResource TicketCardTemplate}"/>
-							</ScrollViewer>
-							<TextBlock x:Name="OpenTicketsEmptyText" Text="There are no open tickets." HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource SmallMutedTextStyle}" Visibility="Collapsed"/>
-						</Grid>
-					</Grid>
-				</Border>
+                    <Button x:Name="RegistrationRequestsButton" Grid.Column="1" Content="Registration requests" Margin="16,0,0,0" Style="{StaticResource SecondaryButtonStyle}" Click="RegistrationRequestsButton_Click"/>
 
-				<Border Grid.Column="1" Padding="22" Margin="9,0,0,0" Style="{StaticResource WorkspaceCardStyle}">
-					<Grid>
-						<Grid.RowDefinitions>
-							<RowDefinition Height="Auto"/>
-							<RowDefinition Height="*"/>
-						</Grid.RowDefinitions>
+                    <Button Grid.Column="2" Content="Knowledge base" Margin="16,0" Style="{StaticResource SecondaryButtonStyle}" IsEnabled="False" ToolTip="Knowledge base will be added later" ToolTipService.ShowOnDisabled="True"/>
 
-						<StackPanel Margin="0,0,0,18">
-							<TextBlock Text="My tickets" Style="{StaticResource SectionTitleTextStyle}"/>
-							<TextBlock x:Name="AssignedTicketsCountText" Margin="0,5,0,0" Style="{StaticResource SmallMutedTextStyle}"/>
-						</StackPanel>
+                    <Grid Grid.Column="3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,16,0" VerticalAlignment="Center">
+                            <TextBlock x:Name="AdminNameText" HorizontalAlignment="Right" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource MainTextBrush}"/>
+                            <TextBlock x:Name="AdminEmailText" Margin="0,3,0,0" HorizontalAlignment="Right" Style="{StaticResource SmallMutedTextStyle}"/>
+                        </StackPanel>
+                        <Button Grid.Column="1" Content="Logout" Style="{StaticResource OutlineButtonStyle}" Click="LogoutButton_Click"/>
+                    </Grid>
+                </Grid>
+            </Border>
 
-						<Grid Grid.Row="1">
-							<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-								<ItemsControl x:Name="AssignedTicketsList" ItemTemplate="{StaticResource TicketCardTemplate}"/>
-							</ScrollViewer>
-							<TextBlock x:Name="AssignedTicketsEmptyText" Text="You have not taken any tickets yet." HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource SmallMutedTextStyle}" Visibility="Collapsed"/>
-						</Grid>
-					</Grid>
-				</Border>
-			</Grid>
-		</Grid>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="6*"/>
+                    <ColumnDefinition Width="5*"/>
+                </Grid.ColumnDefinitions>
 
-		<Border x:Name="TicketDetailsPanel" Width="420" Margin="0,126,28,28" Padding="24" HorizontalAlignment="Right" VerticalAlignment="Stretch" Style="{StaticResource WorkspaceCardStyle}" Panel.ZIndex="5" Visibility="Collapsed">
-			<Border.Effect>
-				<DropShadowEffect BlurRadius="22" ShadowDepth="3" Opacity="0.2"/>
-			</Border.Effect>
+                <Border Padding="22" Margin="0,0,9,0" Style="{StaticResource WorkspaceCardStyle}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
 
-			<Grid>
-				<Grid.RowDefinitions>
-					<RowDefinition Height="Auto"/>
-					<RowDefinition Height="*"/>
-					<RowDefinition Height="Auto"/>
-				</Grid.RowDefinitions>
+                        <Grid Margin="0,0,0,18">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="Available tickets" Style="{StaticResource SectionTitleTextStyle}"/>
+                                <TextBlock x:Name="OpenTicketsCountText" Margin="0,5,0,0" Style="{StaticResource SmallMutedTextStyle}"/>
+                            </StackPanel>
+                            <Button Grid.Column="1" Content="Refresh" Style="{StaticResource SecondaryButtonStyle}" Click="RefreshButton_Click"/>
+                        </Grid>
 
-				<Grid>
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="*"/>
-						<ColumnDefinition Width="Auto"/>
-					</Grid.ColumnDefinitions>
-					<StackPanel>
-						<TextBlock Text="Ticket details" Style="{StaticResource SectionTitleTextStyle}"/>
-						<TextBlock x:Name="DetailsStatusText" Margin="0,5,0,0" Style="{StaticResource SmallMutedTextStyle}"/>
-					</StackPanel>
-					<Button Grid.Column="1" Content="×" Style="{StaticResource ClosePanelButtonStyle}" Click="CloseDetailsButton_Click"/>
-				</Grid>
+                        <Grid Grid.Row="1">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                <ItemsControl x:Name="OpenTicketsList" ItemTemplate="{StaticResource TicketCardTemplate}"/>
+                            </ScrollViewer>
+                            <TextBlock x:Name="OpenTicketsEmptyText" Text="There are no open tickets." HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource SmallMutedTextStyle}" Visibility="Collapsed"/>
+                        </Grid>
+                    </Grid>
+                </Border>
 
-				<ScrollViewer Grid.Row="1" Margin="0,22,0,18" VerticalScrollBarVisibility="Auto">
-					<StackPanel>
-						<TextBlock Text="Author" Style="{StaticResource DetailLabelTextStyle}"/>
-						<TextBlock x:Name="DetailsAuthorNameText" Style="{StaticResource DetailValueTextStyle}"/>
-						<TextBlock x:Name="DetailsAuthorEmailText" Margin="0,4,0,18" Style="{StaticResource SmallMutedTextStyle}"/>
+                <Border Grid.Column="1" Padding="22" Margin="9,0,0,0" Style="{StaticResource WorkspaceCardStyle}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
 
-						<TextBlock Text="Title" Style="{StaticResource DetailLabelTextStyle}"/>
-						<TextBlock x:Name="DetailsTitleText" Margin="0,0,0,18" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource MainTextBrush}" TextWrapping="Wrap"/>
+                        <StackPanel Margin="0,0,0,18">
+                            <TextBlock Text="My tickets" Style="{StaticResource SectionTitleTextStyle}"/>
+                            <TextBlock x:Name="AssignedTicketsCountText" Margin="0,5,0,0" Style="{StaticResource SmallMutedTextStyle}"/>
+                        </StackPanel>
 
-						<Grid Margin="0,0,0,18">
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="*"/>
-								<ColumnDefinition Width="*"/>
-							</Grid.ColumnDefinitions>
-							<StackPanel>
-								<TextBlock Text="Priority" Style="{StaticResource DetailLabelTextStyle}"/>
-								<TextBlock x:Name="DetailsPriorityText" Style="{StaticResource DetailValueTextStyle}"/>
-							</StackPanel>
-							<StackPanel Grid.Column="1">
-								<TextBlock Text="Created" Style="{StaticResource DetailLabelTextStyle}"/>
-								<TextBlock x:Name="DetailsCreatedText" Style="{StaticResource DetailValueTextStyle}"/>
-							</StackPanel>
-						</Grid>
+                        <Grid Grid.Row="1">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                <ItemsControl x:Name="AssignedTicketsList" ItemTemplate="{StaticResource TicketCardTemplate}"/>
+                            </ScrollViewer>
+                            <TextBlock x:Name="AssignedTicketsEmptyText" Text="You have not taken any tickets yet." HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource SmallMutedTextStyle}" Visibility="Collapsed"/>
+                        </Grid>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
 
-						<TextBlock Text="Problem type" Style="{StaticResource DetailLabelTextStyle}"/>
-						<TextBlock x:Name="DetailsProblemTypeText" Margin="0,0,0,16" Style="{StaticResource DetailValueTextStyle}"/>
+        <Border x:Name="TicketDetailsPanel" Width="420" Margin="0,126,28,28" Padding="24" HorizontalAlignment="Right" VerticalAlignment="Stretch" Style="{StaticResource WorkspaceCardStyle}" Panel.ZIndex="5" Visibility="Collapsed">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="22" ShadowDepth="3" Opacity="0.2"/>
+            </Border.Effect>
 
-						<TextBlock Text="Work impact" Style="{StaticResource DetailLabelTextStyle}"/>
-						<TextBlock x:Name="DetailsWorkImpactText" Margin="0,0,0,16" Style="{StaticResource DetailValueTextStyle}"/>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-						<TextBlock Text="Affected people" Style="{StaticResource DetailLabelTextStyle}"/>
-						<TextBlock x:Name="DetailsAffectedPeopleText" Margin="0,0,0,18" Style="{StaticResource DetailValueTextStyle}"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Text="Ticket details" Style="{StaticResource SectionTitleTextStyle}"/>
+                        <TextBlock x:Name="DetailsStatusText" Margin="0,5,0,0" Style="{StaticResource SmallMutedTextStyle}"/>
+                    </StackPanel>
+                    <Button Grid.Column="1" Content="×" Style="{StaticResource ClosePanelButtonStyle}" Click="CloseDetailsButton_Click"/>
+                </Grid>
 
-						<TextBlock Text="Description" Style="{StaticResource DetailLabelTextStyle}"/>
-						<Border Padding="14" Background="{StaticResource InputBackgroundBrush}" BorderBrush="{StaticResource InputBorderBrush}" BorderThickness="1" CornerRadius="10">
-							<TextBlock x:Name="DetailsDescriptionText" Style="{StaticResource DetailValueTextStyle}"/>
-						</Border>
-					</StackPanel>
-				</ScrollViewer>
+                <ScrollViewer Grid.Row="1" Margin="0,22,0,18" VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <TextBlock Text="Author" Style="{StaticResource DetailLabelTextStyle}"/>
+                        <TextBlock x:Name="DetailsAuthorNameText" Style="{StaticResource DetailValueTextStyle}"/>
+                        <TextBlock x:Name="DetailsAuthorEmailText" Margin="0,4,0,18" Style="{StaticResource SmallMutedTextStyle}"/>
 
-				<StackPanel Grid.Row="2">
-					<TextBlock x:Name="TicketActionMessageText" Margin="0,0,0,10" Foreground="{StaticResource ExitButtonBrush}" FontSize="13" TextWrapping="Wrap" Visibility="Collapsed"/>
+                        <TextBlock Text="Title" Style="{StaticResource DetailLabelTextStyle}"/>
+                        <TextBlock x:Name="DetailsTitleText" Margin="0,0,0,18" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource MainTextBrush}" TextWrapping="Wrap"/>
 
-					<StackPanel x:Name="OpenTicketActionsPanel">
-						<Button x:Name="TakeTicketButton" Content="Take ticket" Margin="0,0,0,14" Style="{StaticResource PrimaryButtonStyle}" Click="TakeTicketButton_Click"/>
-						<TextBlock Text="Decline reason" Style="{StaticResource FieldLabelTextStyle}"/>
-						<TextBox x:Name="DeclineReasonTextBox" Margin="0,0,0,10" Style="{StaticResource WorkspaceTextAreaStyle}"/>
-						<Button x:Name="DeclineTicketButton" Content="Decline ticket" Style="{StaticResource DangerButtonStyle}" Click="DeclineTicketButton_Click"/>
-					</StackPanel>
+                        <Grid Margin="0,0,0,18">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="Priority" Style="{StaticResource DetailLabelTextStyle}"/>
+                                <TextBlock x:Name="DetailsPriorityText" Style="{StaticResource DetailValueTextStyle}"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="Created" Style="{StaticResource DetailLabelTextStyle}"/>
+                                <TextBlock x:Name="DetailsCreatedText" Style="{StaticResource DetailValueTextStyle}"/>
+                            </StackPanel>
+                        </Grid>
 
-					<Border x:Name="AssignedTicketInfo" Padding="14" Background="#F3F4F6" CornerRadius="10" Visibility="Collapsed">
-						<TextBlock Text="This ticket is already in your work list." TextWrapping="Wrap" Style="{StaticResource SmallMutedTextStyle}"/>
-					</Border>
-				</StackPanel>
-			</Grid>
-		</Border>
-	</Grid>
+                        <TextBlock Text="Problem type" Style="{StaticResource DetailLabelTextStyle}"/>
+                        <TextBlock x:Name="DetailsProblemTypeText" Margin="0,0,0,16" Style="{StaticResource DetailValueTextStyle}"/>
+
+                        <TextBlock Text="Work impact" Style="{StaticResource DetailLabelTextStyle}"/>
+                        <TextBlock x:Name="DetailsWorkImpactText" Margin="0,0,0,16" Style="{StaticResource DetailValueTextStyle}"/>
+
+                        <TextBlock Text="Affected people" Style="{StaticResource DetailLabelTextStyle}"/>
+                        <TextBlock x:Name="DetailsAffectedPeopleText" Margin="0,0,0,18" Style="{StaticResource DetailValueTextStyle}"/>
+
+                        <TextBlock Text="Description" Style="{StaticResource DetailLabelTextStyle}"/>
+                        <Border Padding="14" Background="{StaticResource InputBackgroundBrush}" BorderBrush="{StaticResource InputBorderBrush}" BorderThickness="1" CornerRadius="10">
+                            <TextBlock x:Name="DetailsDescriptionText" Style="{StaticResource DetailValueTextStyle}"/>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <StackPanel Grid.Row="2">
+                    <TextBlock x:Name="TicketActionMessageText" Margin="0,0,0,10" Style="{StaticResource WorkspaceErrorTextStyle}"/>
+
+                    <StackPanel x:Name="OpenTicketActionsPanel">
+                        <Button x:Name="TakeTicketButton" Content="Take ticket" Margin="0,0,0,14" Style="{StaticResource PrimaryButtonStyle}" Click="TakeTicketButton_Click"/>
+                        <TextBlock Text="Decline reason" Style="{StaticResource FieldLabelTextStyle}"/>
+                        <TextBox x:Name="DeclineReasonTextBox" Style="{StaticResource WorkspaceTextAreaStyle}" TextChanged="DeclineReasonTextBox_TextChanged"/>
+                        <TextBlock x:Name="TicketDeclineReasonErrorText" Margin="0,5,0,10" Style="{StaticResource WorkspaceErrorTextStyle}"/>
+                        <Button x:Name="DeclineTicketButton" Content="Decline ticket" Style="{StaticResource DangerButtonStyle}" Click="DeclineTicketButton_Click"/>
+                    </StackPanel>
+
+                    <Border x:Name="AssignedTicketInfo" Padding="14" Background="#F3F4F6" CornerRadius="10" Visibility="Collapsed">
+                        <TextBlock Text="This ticket is already in your work list." TextWrapping="Wrap" Style="{StaticResource SmallMutedTextStyle}"/>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Border x:Name="RegistrationRequestsPanel" Width="900" Margin="0,126,28,28" Padding="24" HorizontalAlignment="Right" VerticalAlignment="Stretch" Style="{StaticResource WorkspaceCardStyle}" Panel.ZIndex="6" Visibility="Collapsed">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="22" ShadowDepth="3" Opacity="0.2"/>
+            </Border.Effect>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel>
+                        <TextBlock Text="Registration requests" Style="{StaticResource SectionTitleTextStyle}"/>
+                        <TextBlock x:Name="RegistrationRequestsCountText" Margin="0,5,0,0" Style="{StaticResource SmallMutedTextStyle}"/>
+                        <TextBlock x:Name="RegistrationStatusMessageText" Margin="0,5,0,0" Style="{StaticResource WorkspaceMessageTextStyle}"/>
+                    </StackPanel>
+
+                    <Button Grid.Column="1" Content="Refresh" Margin="0,0,12,0" Style="{StaticResource SecondaryButtonStyle}" Click="RefreshRegistrationRequestsButton_Click"/>
+                    <Button Grid.Column="2" Content="×" Style="{StaticResource ClosePanelButtonStyle}" Click="CloseRegistrationRequestsButton_Click"/>
+                </Grid>
+
+                <Grid Grid.Row="1" Margin="0,22,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="4*"/>
+                        <ColumnDefinition Width="5*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid Margin="0,0,18,0">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                            <ItemsControl x:Name="RegistrationRequestsList" ItemTemplate="{StaticResource RegistrationRequestCardTemplate}"/>
+                        </ScrollViewer>
+                        <TextBlock x:Name="RegistrationRequestsEmptyText" Text="There are no pending registration requests." HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" Style="{StaticResource SmallMutedTextStyle}" Visibility="Collapsed"/>
+                    </Grid>
+
+                    <Border Grid.Column="1" Padding="20" Background="{StaticResource InputBackgroundBrush}" BorderBrush="{StaticResource InputBorderBrush}" BorderThickness="1" CornerRadius="12">
+                        <Grid>
+                            <TextBlock x:Name="RegistrationSelectionHintText" Text="Select a request to review it." HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource SmallMutedTextStyle}"/>
+
+                            <ScrollViewer x:Name="RegistrationDetailsContent" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
+                                <StackPanel>
+                                    <TextBlock Text="Applicant" Style="{StaticResource DetailLabelTextStyle}"/>
+                                    <TextBlock x:Name="RegistrationApplicantNameText" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource MainTextBrush}" TextWrapping="Wrap"/>
+                                    <TextBlock x:Name="RegistrationApplicantEmailText" Margin="0,4,0,18" Style="{StaticResource SmallMutedTextStyle}"/>
+
+                                    <Grid Margin="0,0,0,18">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel>
+                                            <TextBlock Text="Requested role" Style="{StaticResource DetailLabelTextStyle}"/>
+                                            <TextBlock x:Name="RegistrationRequestedRoleText" Style="{StaticResource DetailValueTextStyle}"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1">
+                                            <TextBlock Text="Requested" Style="{StaticResource DetailLabelTextStyle}"/>
+                                            <TextBlock x:Name="RegistrationCreatedText" Style="{StaticResource DetailValueTextStyle}"/>
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <TextBlock Text="Assigned role" Style="{StaticResource FieldLabelTextStyle}"/>
+                                    <ComboBox x:Name="AssignedRoleComboBox" Margin="0,0,0,14" Style="{StaticResource AuthComboBoxStyle}"/>
+                                    <Button x:Name="ApproveRegistrationRequestButton" Content="Approve and create user" Margin="0,0,0,18" Style="{StaticResource PrimaryButtonStyle}" Click="ApproveRegistrationRequestButton_Click"/>
+
+                                    <TextBlock Text="Decline reason" Style="{StaticResource FieldLabelTextStyle}"/>
+                                    <TextBox x:Name="RegistrationDeclineReasonTextBox" Style="{StaticResource WorkspaceTextAreaStyle}" TextChanged="RegistrationDeclineReasonTextBox_TextChanged"/>
+                                    <TextBlock x:Name="RegistrationDeclineReasonErrorText" Margin="0,5,0,10" Style="{StaticResource WorkspaceErrorTextStyle}"/>
+                                    <Button x:Name="DeclineRegistrationRequestButton" Content="Decline request" Style="{StaticResource DangerButtonStyle}" Click="DeclineRegistrationRequestButton_Click"/>
+
+                                    <TextBlock x:Name="RegistrationFormErrorText" Margin="0,12,0,0" Style="{StaticResource WorkspaceErrorTextStyle}"/>
+                                </StackPanel>
+                            </ScrollViewer>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
 </Window>

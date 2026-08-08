@@ -3,8 +3,8 @@
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:converters="clr-namespace:HelpDesk_System.Converters">
 
-	<Application.Resources>
-		<converters:EnumDisplayConverter x:Key="EnumDisplayConverter"/>
+    <Application.Resources>
+        <converters:EnumDisplayConverter x:Key="EnumDisplayConverter"/>
 
         <!-- App colours -->
 
@@ -127,7 +127,7 @@
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
                                 CornerRadius="10">
-							<ContentPresenter Margin="{TemplateBinding Padding}"
+                            <ContentPresenter Margin="{TemplateBinding Padding}"
 											  HorizontalAlignment="Center"
 											  VerticalAlignment="Center"/>
                         </Border>
@@ -164,7 +164,7 @@
             <Setter Property="FontWeight" Value="Normal"/>
         </Style>
 
-		<Style x:Key="ExitButtonStyle"
+        <Style x:Key="ExitButtonStyle"
 			   TargetType="Button"
 			   BasedOn="{StaticResource BaseButtonStyle}">
             <Setter Property="Width" Value="110"/>
@@ -174,125 +174,134 @@
             <Setter Property="VerticalAlignment" Value="Top"/>
             <Setter Property="Panel.ZIndex" Value="1"/>
             <Setter Property="Background" Value="{StaticResource ExitButtonBrush}"/>
-			<Setter Property="FontSize" Value="14"/>
-		</Style>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
 
-		<!-- Workspace windows -->
+        <!-- Workspace windows -->
 
-		<Style x:Key="WorkspaceWindowStyle" TargetType="Window">
-			<Setter Property="Width" Value="1380"/>
-			<Setter Property="Height" Value="820"/>
-			<Setter Property="MinWidth" Value="980"/>
-			<Setter Property="MinHeight" Value="620"/>
+        <Style x:Key="WorkspaceWindowStyle" TargetType="Window">
+            <Setter Property="Width" Value="1380"/>
+            <Setter Property="Height" Value="820"/>
+            <Setter Property="MinWidth" Value="980"/>
+            <Setter Property="MinHeight" Value="620"/>
             <Setter Property="Background" Value="{StaticResource WindowBackgroundBrush}"/>
         </Style>
 
-		<Style x:Key="WorkspaceCardStyle" TargetType="Border">
-			<Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
-			<Setter Property="BorderBrush" Value="#E5E7EB"/>
-			<Setter Property="BorderThickness" Value="1"/>
-			<Setter Property="CornerRadius" Value="16"/>
-		</Style>
+        <Style x:Key="WorkspaceCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
+            <Setter Property="BorderBrush" Value="#E5E7EB"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="16"/>
+        </Style>
 
-		<Style x:Key="SectionTitleTextStyle" TargetType="TextBlock">
-			<Setter Property="FontSize" Value="20"/>
-			<Setter Property="FontWeight" Value="SemiBold"/>
-			<Setter Property="Foreground" Value="{StaticResource MainTextBrush}"/>
-		</Style>
+        <Style x:Key="SectionTitleTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="{StaticResource MainTextBrush}"/>
+        </Style>
 
-		<Style x:Key="SmallMutedTextStyle" TargetType="TextBlock">
-			<Setter Property="FontSize" Value="13"/>
-			<Setter Property="Foreground" Value="{StaticResource SecondaryTextBrush}"/>
-		</Style>
+        <Style x:Key="SmallMutedTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="{StaticResource SecondaryTextBrush}"/>
+        </Style>
 
-		<Style x:Key="DetailLabelTextStyle" TargetType="TextBlock" BasedOn="{StaticResource SmallMutedTextStyle}">
-			<Setter Property="Margin" Value="0,0,0,5"/>
-		</Style>
+        <Style x:Key="WorkspaceMessageTextStyle" TargetType="TextBlock" BasedOn="{StaticResource SmallMutedTextStyle}">
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="Visibility" Value="Collapsed"/>
+        </Style>
 
-		<Style x:Key="DetailValueTextStyle" TargetType="TextBlock">
-			<Setter Property="FontSize" Value="15"/>
-			<Setter Property="Foreground" Value="{StaticResource MainTextBrush}"/>
-			<Setter Property="TextWrapping" Value="Wrap"/>
-		</Style>
+        <Style x:Key="WorkspaceErrorTextStyle" TargetType="TextBlock" BasedOn="{StaticResource WorkspaceMessageTextStyle}">
+            <Setter Property="Foreground" Value="{StaticResource ExitButtonBrush}"/>
+        </Style>
 
-		<Style x:Key="SecondaryButtonStyle" TargetType="Button" BasedOn="{StaticResource BaseButtonStyle}">
-			<Setter Property="Height" Value="42"/>
-			<Setter Property="Padding" Value="18,0"/>
-			<Setter Property="Background" Value="#E5E7EB"/>
-			<Setter Property="Foreground" Value="{StaticResource MainTextBrush}"/>
-			<Setter Property="FontSize" Value="14"/>
-		</Style>
+        <Style x:Key="DetailLabelTextStyle" TargetType="TextBlock" BasedOn="{StaticResource SmallMutedTextStyle}">
+            <Setter Property="Margin" Value="0,0,0,5"/>
+        </Style>
 
-		<Style x:Key="OutlineButtonStyle" TargetType="Button" BasedOn="{StaticResource BaseButtonStyle}">
-			<Setter Property="Height" Value="42"/>
-			<Setter Property="Padding" Value="18,0"/>
-			<Setter Property="Background" Value="White"/>
-			<Setter Property="Foreground" Value="{StaticResource MainTextBrush}"/>
-			<Setter Property="BorderBrush" Value="{StaticResource InputBorderBrush}"/>
-			<Setter Property="BorderThickness" Value="1"/>
-			<Setter Property="FontSize" Value="14"/>
-		</Style>
+        <Style x:Key="DetailValueTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Foreground" Value="{StaticResource MainTextBrush}"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
 
-		<Style x:Key="DangerButtonStyle" TargetType="Button" BasedOn="{StaticResource BaseButtonStyle}">
-			<Setter Property="Height" Value="42"/>
-			<Setter Property="Padding" Value="18,0"/>
-			<Setter Property="Background" Value="{StaticResource ExitButtonBrush}"/>
-			<Setter Property="FontSize" Value="14"/>
-		</Style>
+        <Style x:Key="SecondaryButtonStyle" TargetType="Button" BasedOn="{StaticResource BaseButtonStyle}">
+            <Setter Property="Height" Value="42"/>
+            <Setter Property="Padding" Value="18,0"/>
+            <Setter Property="Background" Value="#E5E7EB"/>
+            <Setter Property="Foreground" Value="{StaticResource MainTextBrush}"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
 
-		<Style x:Key="ClosePanelButtonStyle" TargetType="Button" BasedOn="{StaticResource SecondaryButtonStyle}">
-			<Setter Property="Width" Value="36"/>
-			<Setter Property="Height" Value="36"/>
-			<Setter Property="Padding" Value="0"/>
-			<Setter Property="FontSize" Value="17"/>
-		</Style>
+        <Style x:Key="OutlineButtonStyle" TargetType="Button" BasedOn="{StaticResource BaseButtonStyle}">
+            <Setter Property="Height" Value="42"/>
+            <Setter Property="Padding" Value="18,0"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="{StaticResource MainTextBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource InputBorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
 
-		<Style x:Key="TicketCardButtonStyle" TargetType="Button">
-			<Setter Property="Padding" Value="16"/>
-			<Setter Property="Margin" Value="0,0,0,10"/>
-			<Setter Property="Background" Value="{StaticResource InputBackgroundBrush}"/>
-			<Setter Property="BorderBrush" Value="{StaticResource InputBorderBrush}"/>
-			<Setter Property="BorderThickness" Value="1"/>
-			<Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-			<Setter Property="Cursor" Value="Hand"/>
-			<Setter Property="Template">
-				<Setter.Value>
-					<ControlTemplate TargetType="Button">
-						<Border x:Name="CardBorder" Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="12">
-							<ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="Center"/>
-						</Border>
-						<ControlTemplate.Triggers>
-							<Trigger Property="IsMouseOver" Value="True">
-								<Setter TargetName="CardBorder" Property="Background" Value="#F3F4F6"/>
-								<Setter TargetName="CardBorder" Property="BorderBrush" Value="#9CA3AF"/>
-							</Trigger>
-							<Trigger Property="IsPressed" Value="True">
-								<Setter TargetName="CardBorder" Property="Opacity" Value="0.76"/>
-							</Trigger>
-						</ControlTemplate.Triggers>
-					</ControlTemplate>
-				</Setter.Value>
-			</Setter>
-		</Style>
+        <Style x:Key="DangerButtonStyle" TargetType="Button" BasedOn="{StaticResource BaseButtonStyle}">
+            <Setter Property="Height" Value="42"/>
+            <Setter Property="Padding" Value="18,0"/>
+            <Setter Property="Background" Value="{StaticResource ExitButtonBrush}"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
 
-		<Style x:Key="TicketBadgeStyle" TargetType="Border">
-			<Setter Property="Padding" Value="9,4"/>
-			<Setter Property="Background" Value="#E5E7EB"/>
-			<Setter Property="CornerRadius" Value="8"/>
-			<Setter Property="HorizontalAlignment" Value="Left"/>
-		</Style>
+        <Style x:Key="ClosePanelButtonStyle" TargetType="Button" BasedOn="{StaticResource SecondaryButtonStyle}">
+            <Setter Property="Width" Value="36"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="FontSize" Value="17"/>
+        </Style>
 
-		<Style x:Key="WorkspaceTextAreaStyle" TargetType="TextBox">
-			<Setter Property="MinHeight" Value="86"/>
-			<Setter Property="Padding" Value="12,10"/>
-			<Setter Property="FontSize" Value="14"/>
-			<Setter Property="TextWrapping" Value="Wrap"/>
-			<Setter Property="AcceptsReturn" Value="True"/>
-			<Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
-			<Setter Property="BorderBrush" Value="{StaticResource InputBorderBrush}"/>
-			<Setter Property="BorderThickness" Value="1"/>
-			<Setter Property="Background" Value="{StaticResource InputBackgroundBrush}"/>
-		</Style>
+        <Style x:Key="TicketCardButtonStyle" TargetType="Button">
+            <Setter Property="Padding" Value="16"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+            <Setter Property="Background" Value="{StaticResource InputBackgroundBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource InputBorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="CardBorder" Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="12">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="CardBorder" Property="Background" Value="#F3F4F6"/>
+                                <Setter TargetName="CardBorder" Property="BorderBrush" Value="#9CA3AF"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="CardBorder" Property="Opacity" Value="0.76"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
-	</Application.Resources>
+        <Style x:Key="TicketBadgeStyle" TargetType="Border">
+            <Setter Property="Padding" Value="9,4"/>
+            <Setter Property="Background" Value="#E5E7EB"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+        </Style>
+
+        <Style x:Key="WorkspaceTextAreaStyle" TargetType="TextBox">
+            <Setter Property="MinHeight" Value="86"/>
+            <Setter Property="Padding" Value="12,10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="AcceptsReturn" Value="True"/>
+            <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="BorderBrush" Value="{StaticResource InputBorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="{StaticResource InputBackgroundBrush}"/>
+        </Style>
+
+    </Application.Resources>
 </Application>
