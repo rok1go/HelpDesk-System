@@ -18,63 +18,85 @@
                             Margin="0,0,0,30"
                             Style="{StaticResource AuthSubtitleTextStyle}"/>
 
-                    <TextBlock Text="First name"
-                            Style="{StaticResource FieldLabelTextStyle}"/>
+                    <StackPanel Margin="0,0,0,16">
+                        <TextBlock Text="First name"
+                                Style="{StaticResource FieldLabelTextStyle}"/>
 
-                    <TextBox x:Name="FirstNameTextBox"
-                            Margin="0,0,0,16"
-                            Style="{StaticResource AuthTextBoxStyle}"/>
+                        <TextBox x:Name="FirstNameTextBox"
+                                Style="{StaticResource AuthTextBoxStyle}"/>
 
-                    <TextBlock Text="Last name"
-                            Style="{StaticResource FieldLabelTextStyle}"/>
+                        <TextBlock x:Name="FirstNameErrorTextBlock"
+                                Style="{StaticResource AuthErrorTextStyle}"/>
+                    </StackPanel>
 
-                    <TextBox x:Name="LastNameTextBox"
-                            Margin="0,0,0,16"
-                            Style="{StaticResource AuthTextBoxStyle}"/>
+                    <StackPanel Margin="0,0,0,16">
+                        <TextBlock Text="Last name"
+                                Style="{StaticResource FieldLabelTextStyle}"/>
 
-                    <TextBlock Text="Email"
-                            Style="{StaticResource FieldLabelTextStyle}"/>
+                        <TextBox x:Name="LastNameTextBox"
+                                Style="{StaticResource AuthTextBoxStyle}"/>
 
-                    <TextBox x:Name="EmailTextBox"
-                            Margin="0,0,0,16"
-                            Style="{StaticResource AuthTextBoxStyle}"/>
+                        <TextBlock x:Name="LastNameErrorTextBlock"
+                                Style="{StaticResource AuthErrorTextStyle}"/>
+                    </StackPanel>
 
-                    <TextBlock Text="Password"
-                            Style="{StaticResource FieldLabelTextStyle}"/>
+                    <StackPanel Margin="0,0,0,16">
+                        <TextBlock Text="Email"
+                                Style="{StaticResource FieldLabelTextStyle}"/>
 
-                    <PasswordBox x:Name="PasswordInput"
-                            Margin="0,0,0,16"
-                            Style="{StaticResource AuthPasswordBoxStyle}"/>
+                        <TextBox x:Name="EmailTextBox"
+                                Style="{StaticResource AuthTextBoxStyle}"/>
 
-                    <TextBlock Text="Confirm password"
-                            Style="{StaticResource FieldLabelTextStyle}"/>
+                        <TextBlock x:Name="EmailErrorTextBlock"
+                                Style="{StaticResource AuthErrorTextStyle}"/>
+                    </StackPanel>
 
-                    <PasswordBox x:Name="ConfirmPasswordInput"
-                            Margin="0,0,0,16"
-                            Style="{StaticResource AuthPasswordBoxStyle}"/>
+                    <StackPanel Margin="0,0,0,16">
+                        <TextBlock Text="Password"
+                                Style="{StaticResource FieldLabelTextStyle}"/>
 
-                    <TextBlock Text="Requested role"
-                            Style="{StaticResource FieldLabelTextStyle}"/>
+                        <PasswordBox x:Name="PasswordInput"
+                                Style="{StaticResource AuthPasswordBoxStyle}"/>
 
-                    <ComboBox x:Name="RoleComboBox"
-                            SelectedIndex="0"
-                            Margin="0,0,0,24"
-                            Style="{StaticResource AuthComboBoxStyle}">
-                        <ComboBoxItem Content="Employee"/>
-                        <ComboBoxItem Content="Administrator"/>
-                    </ComboBox>
+                        <TextBlock x:Name="PasswordErrorTextBlock"
+                                Style="{StaticResource AuthErrorTextStyle}"/>
+                    </StackPanel>
+
+                    <StackPanel Margin="0,0,0,16">
+                        <TextBlock Text="Confirm password"
+                                Style="{StaticResource FieldLabelTextStyle}"/>
+
+                        <PasswordBox x:Name="ConfirmPasswordInput"
+                                Style="{StaticResource AuthPasswordBoxStyle}"/>
+
+                        <TextBlock x:Name="ConfirmPasswordErrorTextBlock"
+                                Style="{StaticResource AuthErrorTextStyle}"/>
+                    </StackPanel>
+
+                    <StackPanel Margin="0,0,0,24">
+                        <TextBlock Text="Requested role"
+                                Style="{StaticResource FieldLabelTextStyle}"/>
+
+                        <ComboBox x:Name="RoleComboBox"
+                                SelectedIndex="0"
+                                Style="{StaticResource AuthComboBoxStyle}">
+                            <ComboBoxItem Content="Employee"/>
+                            <ComboBoxItem Content="Administrator"/>
+                        </ComboBox>
+
+                        <TextBlock x:Name="RoleErrorTextBlock"
+                                Style="{StaticResource AuthErrorTextStyle}"/>
+                    </StackPanel>
 
                     <Button x:Name="RegisterButton"
                             Content="Send request"
                             Style="{StaticResource PrimaryButtonStyle}"
                             Click="RegisterButton_Click"/>
 
-                    <TextBlock x:Name="RegistrationStatusTextBlock"
-                            FontWeight="SemiBold"
+                    <TextBlock x:Name="FormErrorTextBlock"
                             TextAlignment="Center"
-                            TextWrapping="Wrap"
                             Margin="0,12,0,0"
-                            Visibility="Collapsed"/>
+                            Style="{StaticResource AuthErrorTextStyle}"/>
 
                     <Button x:Name="OpenLoginButton"
                             Content="Already have an account? Login"

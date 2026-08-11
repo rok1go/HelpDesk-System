@@ -1,12 +1,15 @@
 using System.Windows;
-using System.Windows.Media;
-using HelpDesk_System.Services;
+using System.Windows.Controls;
 using HelpDesk_System.Models.Enums;
+using HelpDesk_System.Services;
 
 namespace HelpDesk_System.Windows
 {
     public partial class RegisterWindow : Window
     {
+        private const int MinimumNameLength = 2;
+        private const int MinimumPasswordLength = 8;
+
         private readonly WindowNavigationService _navigationService;
         private readonly RegistrationRequestService _registrationRequestService;
 
@@ -22,13 +25,11 @@ namespace HelpDesk_System.Windows
             Width = SystemParameters.WorkArea.Width * 0.8;
             Height = SystemParameters.WorkArea.Height * 0.8;
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
-
-
         }
 
         private async void RegisterButton_Click(object sender, RoutedEventArgs e)
         {
-            RegistrationStatusTextBlock.Visibility = Visibility.Collapsed;
+            ClearValidationErrors();
 
             var firstName = FirstNameTextBox.Text.Trim();
             var lastName = LastNameTextBox.Text.Trim();
@@ -36,70 +37,183 @@ namespace HelpDesk_System.Windows
             var password = PasswordInput.Password;
             var confirmPassword = ConfirmPasswordInput.Password;
 
-            if (string.IsNullOrWhiteSpace(firstName) ||
-                string.IsNullOrWhiteSpace(lastName) ||
-                string.IsNullOrWhiteSpace(email) ||
-                string.IsNullOrWhiteSpace(password) ||
-                string.IsNullOrWhiteSpace(confirmPassword))
+            if (!ValidateForm(firstName, lastName, email, password, confirmPassword))
             {
-                ShowError("Fill in all fields.");
                 return;
             }
 
-            if (password != confirmPassword)
-            {
-                ShowError("Passwords do not match.");
-                return;
-            }
-
-            var requestedRole = RoleComboBox.SelectedIndex == 1
-                ? UserRole.Admin
-                : UserRole.Worker;
+            var requestedRole = GetRequestedRole();
 
             RegisterButton.IsEnabled = false;
+            bool requestSubmitted;
 
             try
             {
-                var requestSubmitted = await _registrationRequestService.SubmitAsync(
+                requestSubmitted = await _registrationRequestService.SubmitAsync(
                     firstName,
                     lastName,
                     email,
                     password,
                     requestedRole);
-
-                if (!requestSubmitted)
-                {
-                    ShowError("This email is already registered or has a pending request.");
-                    return;
-                }
-
-                ShowSuccess("Your registration request has been sent. Wait for administrator approval.");
-
-                PasswordInput.Clear();
-                ConfirmPasswordInput.Clear();
             }
             catch
             {
-                ShowError("The registration request could not be sent. Please try again.");
+                ShowFieldError(
+                    FormErrorTextBlock,
+                    "The registration request could not be sent. Please try again.");
+                return;
             }
             finally
             {
                 RegisterButton.IsEnabled = true;
             }
+
+            if (!requestSubmitted)
+            {
+                ShowFieldError(
+                    EmailErrorTextBlock,
+                    "This email is already registered or has a pending request.");
+                return;
+            }
+
+            _navigationService.OpenLogin(this);
         }
 
-        private void ShowError(string message)
+        private bool ValidateForm(
+            string firstName,
+            string lastName,
+            string email,
+            string password,
+            string confirmPassword)
         {
-            RegistrationStatusTextBlock.Text = message;
-            RegistrationStatusTextBlock.Foreground = Brushes.Firebrick;
-            RegistrationStatusTextBlock.Visibility = Visibility.Visible;
+            var isValid = true;
+
+            var firstNameError = ValidateName(firstName, "first name");
+            if (firstNameError is not null)
+            {
+                ShowFieldError(FirstNameErrorTextBlock, firstNameError);
+                isValid = false;
+            }
+
+            var lastNameError = ValidateName(lastName, "last name");
+            if (lastNameError is not null)
+            {
+                ShowFieldError(LastNameErrorTextBlock, lastNameError);
+                isValid = false;
+            }
+
+            var emailError = ValidateEmail(email);
+            if (emailError is not null)
+            {
+                ShowFieldError(EmailErrorTextBlock, emailError);
+                isValid = false;
+            }
+
+            var passwordError = ValidatePassword(password);
+            if (passwordError is not null)
+            {
+                ShowFieldError(PasswordErrorTextBlock, passwordError);
+                isValid = false;
+            }
+
+            var confirmPasswordError = ValidateConfirmedPassword(password, confirmPassword);
+            if (confirmPasswordError is not null)
+            {
+                ShowFieldError(ConfirmPasswordErrorTextBlock, confirmPasswordError);
+                isValid = false;
+            }
+
+            if (RoleComboBox.SelectedIndex is not 0 and not 1)
+            {
+                ShowFieldError(RoleErrorTextBlock, "Select a requested role.");
+                isValid = false;
+            }
+
+            return isValid;
         }
 
-        private void ShowSuccess(string message)
+        private static string? ValidateName(string name, string fieldName)
         {
-            RegistrationStatusTextBlock.Text = message;
-            RegistrationStatusTextBlock.Foreground = Brushes.SeaGreen;
-            RegistrationStatusTextBlock.Visibility = Visibility.Visible;
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return $"Enter your {fieldName}.";
+            }
+
+            if (name.Length < MinimumNameLength)
+            {
+                return $"The {fieldName} must contain at least {MinimumNameLength} letters.";
+            }
+
+            if (name.Any(character => !char.IsLetter(character)))
+            {
+                return $"The {fieldName} can contain letters only.";
+            }
+
+            return null;
+        }
+
+        private static string? ValidateEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return "Enter your email.";
+            }
+
+            return email.Contains('@')
+                ? null
+                : "The email must contain @.";
+        }
+
+        private static string? ValidatePassword(string password)
+        {
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                return "Enter a password.";
+            }
+
+            var hasMinimumLength = password.Length >= MinimumPasswordLength;
+            var hasUppercaseLetter = password.Any(char.IsUpper);
+            var hasDigit = password.Any(char.IsDigit);
+
+            return hasMinimumLength && hasUppercaseLetter && hasDigit
+                ? null
+                : "Use at least 8 characters, one uppercase letter and one digit.";
+        }
+
+        private static string? ValidateConfirmedPassword(string password, string confirmPassword)
+        {
+            if (string.IsNullOrWhiteSpace(confirmPassword))
+            {
+                return "Confirm your password.";
+            }
+
+            return password == confirmPassword
+                ? null
+                : "Passwords do not match.";
+        }
+
+        private UserRole GetRequestedRole()
+        {
+            return RoleComboBox.SelectedIndex == 1
+                ? UserRole.Admin
+                : UserRole.Worker;
+        }
+
+        private void ClearValidationErrors()
+        {
+            FirstNameErrorTextBlock.Visibility = Visibility.Collapsed;
+            LastNameErrorTextBlock.Visibility = Visibility.Collapsed;
+            EmailErrorTextBlock.Visibility = Visibility.Collapsed;
+            PasswordErrorTextBlock.Visibility = Visibility.Collapsed;
+            ConfirmPasswordErrorTextBlock.Visibility = Visibility.Collapsed;
+            RoleErrorTextBlock.Visibility = Visibility.Collapsed;
+            FormErrorTextBlock.Visibility = Visibility.Collapsed;
+        }
+
+        private static void ShowFieldError(TextBlock errorTextBlock, string message)
+        {
+            errorTextBlock.Text = message;
+            errorTextBlock.Visibility = Visibility.Visible;
         }
 
         private void OpenLoginButton_Click(object sender, RoutedEventArgs e)
