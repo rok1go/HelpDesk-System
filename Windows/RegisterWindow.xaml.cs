@@ -9,6 +9,7 @@ namespace HelpDesk_System.Windows
     {
         private const int MinimumNameLength = 2;
         private const int MinimumPasswordLength = 8;
+        private static readonly TimeSpan SuccessMessageDisplayDuration = TimeSpan.FromSeconds(2);
 
         private readonly WindowNavigationService _navigationService;
         private readonly RegistrationRequestService _registrationRequestService;
@@ -29,7 +30,7 @@ namespace HelpDesk_System.Windows
 
         private async void RegisterButton_Click(object sender, RoutedEventArgs e)
         {
-            ClearValidationErrors();
+            ClearFormMessages();
 
             var firstName = FirstNameTextBox.Text.Trim();
             var lastName = LastNameTextBox.Text.Trim();
@@ -44,7 +45,8 @@ namespace HelpDesk_System.Windows
 
             var requestedRole = GetRequestedRole();
 
-            RegisterButton.IsEnabled = false;
+            SetFormActionsEnabled(false);
+
             bool requestSubmitted;
 
             try
@@ -61,11 +63,9 @@ namespace HelpDesk_System.Windows
                 ShowFieldError(
                     FormErrorTextBlock,
                     "The registration request could not be sent. Please try again.");
+
+                SetFormActionsEnabled(true);
                 return;
-            }
-            finally
-            {
-                RegisterButton.IsEnabled = true;
             }
 
             if (!requestSubmitted)
@@ -73,9 +73,15 @@ namespace HelpDesk_System.Windows
                 ShowFieldError(
                     EmailErrorTextBlock,
                     "This email is already registered or has a pending request.");
+
+                SetFormActionsEnabled(true);
                 return;
             }
 
+            ShowSuccessMessage(
+                "Registration request sent successfully. Redirecting to login...");
+
+            await Task.Delay(SuccessMessageDisplayDuration);
             _navigationService.OpenLogin(this);
         }
 
@@ -199,7 +205,7 @@ namespace HelpDesk_System.Windows
                 : UserRole.Worker;
         }
 
-        private void ClearValidationErrors()
+        private void ClearFormMessages()
         {
             FirstNameErrorTextBlock.Visibility = Visibility.Collapsed;
             LastNameErrorTextBlock.Visibility = Visibility.Collapsed;
@@ -208,12 +214,25 @@ namespace HelpDesk_System.Windows
             ConfirmPasswordErrorTextBlock.Visibility = Visibility.Collapsed;
             RoleErrorTextBlock.Visibility = Visibility.Collapsed;
             FormErrorTextBlock.Visibility = Visibility.Collapsed;
+            FormSuccessTextBlock.Visibility = Visibility.Collapsed;
         }
 
         private static void ShowFieldError(TextBlock errorTextBlock, string message)
         {
             errorTextBlock.Text = message;
             errorTextBlock.Visibility = Visibility.Visible;
+        }
+
+        private void ShowSuccessMessage(string message)
+        {
+            FormSuccessTextBlock.Text = message;
+            FormSuccessTextBlock.Visibility = Visibility.Visible;
+        }
+
+        private void SetFormActionsEnabled(bool isEnabled)
+        {
+            RegisterButton.IsEnabled = isEnabled;
+            OpenLoginButton.IsEnabled = isEnabled;
         }
 
         private void OpenLoginButton_Click(object sender, RoutedEventArgs e)

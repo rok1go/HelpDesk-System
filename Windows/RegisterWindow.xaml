@@ -93,6 +93,10 @@
                             Style="{StaticResource PrimaryButtonStyle}"
                             Click="RegisterButton_Click"/>
 
+                    <TextBlock x:Name="FormSuccessTextBlock"
+                            TextAlignment="Center"
+                            Style="{StaticResource AuthSuccessTextStyle}"/>
+
                     <TextBlock x:Name="FormErrorTextBlock"
                             TextAlignment="Center"
                             Margin="0,12,0,0"

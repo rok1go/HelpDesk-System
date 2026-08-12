@@ -12,6 +12,7 @@
         <SolidColorBrush x:Key="CardBackgroundBrush" Color="#FFFFFF"/>
         <SolidColorBrush x:Key="PrimaryButtonBrush" Color="#4B5563"/>
         <SolidColorBrush x:Key="ExitButtonBrush" Color="#DC2626"/>
+        <SolidColorBrush x:Key="SuccessTextBrush" Color="#15803D"/>
         <SolidColorBrush x:Key="MainTextBrush" Color="#111827"/>
         <SolidColorBrush x:Key="SecondaryTextBrush" Color="#6B7280"/>
         <SolidColorBrush x:Key="FieldTextBrush" Color="#374151"/>
@@ -55,6 +56,15 @@
             <Setter Property="Foreground" Value="{StaticResource ExitButtonBrush}"/>
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="Margin" Value="0,5,0,0"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="Visibility" Value="Collapsed"/>
+        </Style>
+
+        <Style x:Key="AuthSuccessTextStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource SuccessTextBrush}"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,12,0,0"/>
             <Setter Property="TextWrapping" Value="Wrap"/>
             <Setter Property="Visibility" Value="Collapsed"/>
         </Style>
