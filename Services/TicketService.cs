@@ -8,10 +8,74 @@ namespace HelpDesk_System.Services;
 public class TicketService
 {
 	private readonly IDbContextFactory<HelpDeskDbContext> _contextFactory;
+	private readonly TicketPriorityCalculator _priorityCalculator;
 
-	public TicketService(IDbContextFactory<HelpDeskDbContext> contextFactory)
+	public TicketService(
+		IDbContextFactory<HelpDeskDbContext> contextFactory,
+		TicketPriorityCalculator priorityCalculator)
 	{
 		_contextFactory = contextFactory;
+		_priorityCalculator = priorityCalculator;
+	}
+
+	public async Task CreateTicketAsync(
+		int authorId,
+		string title,
+		string description,
+		ProblemType problemType,
+		WorkImpact workImpact,
+		AffectedPeople affectedPeople)
+	{
+		ArgumentException.ThrowIfNullOrWhiteSpace(title);
+		ArgumentException.ThrowIfNullOrWhiteSpace(description);
+
+		await using var context = await _contextFactory.CreateDbContextAsync();
+
+		var ticket = new Ticket
+		{
+			AuthorId = authorId,
+			Title = title.Trim(),
+			Description = description.Trim(),
+			ProblemType = problemType,
+			WorkImpact = workImpact,
+			AffectedPeople = affectedPeople,
+			Priority = _priorityCalculator.Calculate(
+				problemType,
+				workImpact,
+				affectedPeople),
+			Status = TicketStatus.Open,
+			CreatedAt = DateTime.UtcNow
+		};
+
+		context.Tickets.Add(ticket);
+		await context.SaveChangesAsync();
+	}
+
+	public async Task<List<Ticket>> GetUserTicketsAsync(int authorId)
+	{
+		await using var context = await _contextFactory.CreateDbContextAsync();
+
+		return await context.Tickets
+			.AsNoTracking()
+			.Include(ticket => ticket.AssignedAdmin)
+			.Where(ticket => ticket.AuthorId == authorId)
+			.OrderByDescending(ticket => ticket.CreatedAt)
+			.ToListAsync();
+	}
+
+	public async Task<bool> DeleteOpenTicketAsync(int ticketId, int authorId)
+	{
+		await using var context = await _contextFactory.CreateDbContextAsync();
+
+		var deletedRows = await context.Tickets
+			.Where(ticket =>
+				ticket.Id == ticketId &&
+				ticket.AuthorId == authorId &&
+				ticket.Status == TicketStatus.Open &&
+				ticket.AssignedAdminId == null)
+			.ExecuteDeleteAsync();
+
+		return deletedRows == 1;
 	}
 
 	public async Task<List<Ticket>> GetOpenTicketsAsync()

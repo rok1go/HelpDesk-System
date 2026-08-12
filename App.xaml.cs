@@ -24,12 +24,13 @@ public partial class App : Application
                     )
                 );
 
-				services.AddSingleton<DbInitializer>();
-				services.AddSingleton<WindowNavigationService>();
-				services.AddTransient<LoginWindow>();
-				services.AddTransient<RegisterWindow>();
-				services.AddTransient<AuthService>();
-				services.AddTransient<TicketService>();
+                services.AddSingleton<DbInitializer>();
+                services.AddSingleton<WindowNavigationService>();
+                services.AddSingleton<TicketPriorityCalculator>();
+                services.AddTransient<LoginWindow>();
+                services.AddTransient<RegisterWindow>();
+                services.AddTransient<AuthService>();
+                services.AddTransient<TicketService>();
                 services.AddTransient<RegistrationRequestService>();
             })
             .Build();

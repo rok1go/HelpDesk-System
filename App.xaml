@@ -225,6 +225,11 @@
             <Setter Property="Foreground" Value="{StaticResource ExitButtonBrush}"/>
         </Style>
 
+        <Style x:Key="WorkspaceSuccessTextStyle" TargetType="TextBlock" BasedOn="{StaticResource WorkspaceMessageTextStyle}">
+            <Setter Property="Foreground" Value="{StaticResource SuccessTextBrush}"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
         <Style x:Key="DetailLabelTextStyle" TargetType="TextBlock" BasedOn="{StaticResource SmallMutedTextStyle}">
             <Setter Property="Margin" Value="0,0,0,5"/>
         </Style>
@@ -312,6 +317,20 @@
             <Setter Property="BorderBrush" Value="{StaticResource InputBorderBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Background" Value="{StaticResource InputBackgroundBrush}"/>
+        </Style>
+
+        <Style x:Key="WorkspaceTextBoxStyle"
+               TargetType="TextBox"
+               BasedOn="{StaticResource AuthTextBoxStyle}">
+            <Setter Property="Height" Value="42"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+
+        <Style x:Key="WorkspaceComboBoxStyle"
+               TargetType="ComboBox"
+               BasedOn="{StaticResource AuthComboBoxStyle}">
+            <Setter Property="Height" Value="42"/>
+            <Setter Property="FontSize" Value="14"/>
         </Style>
 
     </Application.Resources>
