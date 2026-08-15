@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -6,8 +5,7 @@ using System.Windows.Media.Animation;
 using HelpDesk_System.Models;
 using HelpDesk_System.Models.Enums;
 using HelpDesk_System.Services;
-using Microsoft.EntityFrameworkCore;
-using Npgsql;
+using HelpDesk_System.Utilities;
 
 namespace HelpDesk_System.Windows;
 
@@ -54,7 +52,10 @@ public partial class WorkerWindow : Window
             _userTickets = await _ticketService.GetUserTicketsAsync(_currentUser.Id);
             UserTicketsList.ItemsSource = _userTickets;
 
-            UserTicketsCountText.Text = GetTicketCountText(_userTickets.Count);
+            UserTicketsCountText.Text = DisplayFormatter.FormatCount(
+                _userTickets.Count,
+                "ticket",
+                "tickets");
             UserTicketsEmptyText.Visibility = _userTickets.Count == 0
                 ? Visibility.Visible
                 : Visibility.Collapsed;
@@ -78,7 +79,7 @@ public partial class WorkerWindow : Window
                 ShowTicketDetails(currentTicket, false);
             }
         }
-        catch (Exception exception) when (IsDatabaseFailure(exception))
+        catch (Exception exception) when (DatabaseExceptionClassifier.IsDatabaseFailure(exception))
         {
             ShowWorkspaceStatusMessage(
                 "Tickets could not be loaded. Check the database connection.");
@@ -118,7 +119,7 @@ public partial class WorkerWindow : Window
             ShowFormSuccessMessage("Ticket was submitted successfully.");
             await LoadUserTicketsAsync();
         }
-        catch (Exception exception) when (IsDatabaseFailure(exception))
+        catch (Exception exception) when (DatabaseExceptionClassifier.IsDatabaseFailure(exception))
         {
             ShowFormErrorMessage(
                 "The ticket could not be sent. Check the database connection and try again.");
@@ -140,13 +141,13 @@ public partial class WorkerWindow : Window
 
         if (string.IsNullOrWhiteSpace(title))
         {
-            ShowFieldError(TitleErrorText, "Enter a ticket title.");
+            ShowMessage(TitleErrorText, "Enter a ticket title.");
             isValid = false;
         }
 
         if (string.IsNullOrWhiteSpace(description))
         {
-            ShowFieldError(DescriptionErrorText, "Describe the issue.");
+            ShowMessage(DescriptionErrorText, "Describe the issue.");
             isValid = false;
         }
 
@@ -157,7 +158,7 @@ public partial class WorkerWindow : Window
         else
         {
             problemType = default;
-            ShowFieldError(ProblemTypeErrorText, "Select a problem type.");
+            ShowMessage(ProblemTypeErrorText, "Select a problem type.");
             isValid = false;
         }
 
@@ -168,7 +169,7 @@ public partial class WorkerWindow : Window
         else
         {
             workImpact = default;
-            ShowFieldError(WorkImpactErrorText, "Select the work impact.");
+            ShowMessage(WorkImpactErrorText, "Select the work impact.");
             isValid = false;
         }
 
@@ -179,7 +180,7 @@ public partial class WorkerWindow : Window
         else
         {
             affectedPeople = default;
-            ShowFieldError(AffectedPeopleErrorText, "Select who is affected.");
+            ShowMessage(AffectedPeopleErrorText, "Select who is affected.");
             isValid = false;
         }
 
@@ -197,13 +198,13 @@ public partial class WorkerWindow : Window
     private void ShowTicketDetails(Ticket ticket, bool animate = true)
     {
         _selectedTicket = ticket;
-        DetailsStatusText.Text = FormatEnum(ticket.Status);
+        DetailsStatusText.Text = DisplayFormatter.FormatEnum(ticket.Status);
         DetailsTitleText.Text = ticket.Title;
-        DetailsPriorityText.Text = FormatEnum(ticket.Priority);
-        DetailsCreatedText.Text = ticket.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm");
-        DetailsProblemTypeText.Text = FormatEnum(ticket.ProblemType);
-        DetailsWorkImpactText.Text = FormatEnum(ticket.WorkImpact);
-        DetailsAffectedPeopleText.Text = FormatEnum(ticket.AffectedPeople);
+        DetailsPriorityText.Text = DisplayFormatter.FormatEnum(ticket.Priority);
+        DetailsCreatedText.Text = DisplayFormatter.FormatLocalDateTime(ticket.CreatedAt);
+        DetailsProblemTypeText.Text = DisplayFormatter.FormatEnum(ticket.ProblemType);
+        DetailsWorkImpactText.Text = DisplayFormatter.FormatEnum(ticket.WorkImpact);
+        DetailsAffectedPeopleText.Text = DisplayFormatter.FormatEnum(ticket.AffectedPeople);
         DetailsAssignedAdminText.Text = ticket.AssignedAdmin is null
             ? "Not assigned yet"
             : $"{ticket.AssignedAdmin.FirstName} {ticket.AssignedAdmin.LastName}".Trim();
@@ -310,11 +311,11 @@ public partial class WorkerWindow : Window
             await LoadUserTicketsAsync();
             ShowTicketListSuccessMessage("Ticket was deleted.");
         }
-        catch (Exception exception) when (IsDatabaseFailure(exception))
+        catch (Exception exception) when (DatabaseExceptionClassifier.IsDatabaseFailure(exception))
         {
             DeleteTicketConfirmationPanel.Visibility = Visibility.Collapsed;
             DeleteTicketButton.Visibility = Visibility.Visible;
-            ShowFieldError(
+            ShowMessage(
                 DeleteTicketErrorText,
                 "The ticket could not be deleted. Check the database connection and try again.");
         }
@@ -387,7 +388,7 @@ public partial class WorkerWindow : Window
         ConfirmDeleteTicketButton.IsEnabled = isEnabled;
     }
 
-    private static void ShowFieldError(TextBlock textBlock, string message)
+    private static void ShowMessage(TextBlock textBlock, string message)
     {
         textBlock.Text = message;
         textBlock.Visibility = Visibility.Visible;
@@ -395,20 +396,17 @@ public partial class WorkerWindow : Window
 
     private void ShowFormSuccessMessage(string message)
     {
-        FormSuccessMessageText.Text = message;
-        FormSuccessMessageText.Visibility = Visibility.Visible;
+        ShowMessage(FormSuccessMessageText, message);
     }
 
     private void ShowFormErrorMessage(string message)
     {
-        FormErrorMessageText.Text = message;
-        FormErrorMessageText.Visibility = Visibility.Visible;
+        ShowMessage(FormErrorMessageText, message);
     }
 
     private void ShowWorkspaceStatusMessage(string message)
     {
-        WorkspaceStatusMessageText.Text = message;
-        WorkspaceStatusMessageText.Visibility = Visibility.Visible;
+        ShowMessage(WorkspaceStatusMessageText, message);
     }
 
     private void HideWorkspaceStatusMessage()
@@ -418,8 +416,7 @@ public partial class WorkerWindow : Window
 
     private void ShowTicketListSuccessMessage(string message)
     {
-        TicketListSuccessMessageText.Text = message;
-        TicketListSuccessMessageText.Visibility = Visibility.Visible;
+        ShowMessage(TicketListSuccessMessageText, message);
     }
 
     private void HideTicketListSuccessMessage()
@@ -431,20 +428,5 @@ public partial class WorkerWindow : Window
     {
         textBlock.Text = string.Empty;
         textBlock.Visibility = Visibility.Collapsed;
-    }
-
-    private static string GetTicketCountText(int count)
-    {
-        return count == 1 ? "1 ticket" : $"{count} tickets";
-    }
-
-    private static bool IsDatabaseFailure(Exception exception)
-    {
-        return exception is DbUpdateException or NpgsqlException;
-    }
-
-    private static string FormatEnum(Enum value)
-    {
-        return Regex.Replace(value.ToString(), "([a-z])([A-Z])", "$1 $2");
     }
 }
