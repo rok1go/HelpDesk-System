@@ -1,11 +1,10 @@
-﻿using HelpDesk_System.Db;
+using System.Windows;
+using HelpDesk_System.Db;
 using HelpDesk_System.Services;
 using HelpDesk_System.Windows;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Windows;
 
 namespace HelpDesk_System;
 
@@ -19,10 +18,12 @@ public partial class App : Application
             .ConfigureServices((context, services) =>
             {
                 services.AddDbContextFactory<HelpDeskDbContext>(options =>
-                    options.UseNpgsql(
-                        context.Configuration.GetConnectionString("DefaultConnection")
-                    )
-                );
+                {
+                    var connectionString = DatabaseConfiguration.GetRequiredConnectionString(
+                        context.Configuration);
+
+                    options.UseNpgsql(connectionString);
+                });
 
                 services.AddSingleton<DbInitializer>();
                 services.AddSingleton<WindowNavigationService>();
@@ -35,6 +36,7 @@ public partial class App : Application
             })
             .Build();
     }
+
     protected override async void OnStartup(StartupEventArgs e)
     {
         await _host.StartAsync();

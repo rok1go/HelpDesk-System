@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+using System.IO;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
-using System.IO;
 
 namespace HelpDesk_System.Db;
 
@@ -12,9 +12,10 @@ public class HelpDeskDbContextFactory : IDesignTimeDbContextFactory<HelpDeskDbCo
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json")
+            .AddEnvironmentVariables()
             .Build();
 
-        var connectionString = configuration.GetConnectionString("DefaultConnection");
+        var connectionString = DatabaseConfiguration.GetRequiredConnectionString(configuration);
 
         var optionsBuilder = new DbContextOptionsBuilder<HelpDeskDbContext>();
 
