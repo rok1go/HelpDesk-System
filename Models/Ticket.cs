@@ -16,6 +16,7 @@ public class Ticket
 
     public TicketPriority Priority { get; set; }
     public TicketStatus Status { get; set; } = TicketStatus.Open;
+    public bool IsKnowledgeBasePublished { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

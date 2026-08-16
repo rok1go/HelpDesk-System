@@ -62,6 +62,73 @@
                 </Grid>
             </Button>
         </DataTemplate>
+
+        <DataTemplate x:Key="WorkerKnowledgeBaseTicketCardTemplate">
+            <Border
+                Margin="0,0,0,12"
+                Padding="18"
+                Background="{StaticResource InputBackgroundBrush}"
+                BorderBrush="{StaticResource InputBorderBrush}"
+                BorderThickness="1"
+                CornerRadius="12">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Border Style="{StaticResource TicketBadgeStyle}">
+                            <TextBlock
+                                Text="{Binding Status, Converter={StaticResource EnumDisplayConverter}}"
+                                FontSize="12"
+                                FontWeight="SemiBold"
+                                Foreground="{StaticResource FieldTextBrush}"/>
+                        </Border>
+
+                        <StackPanel
+                            Grid.Column="1"
+                            HorizontalAlignment="Right"
+                            Orientation="Horizontal">
+                            <TextBlock Text="#" Style="{StaticResource SmallMutedTextStyle}"/>
+                            <TextBlock Text="{Binding Id}" Style="{StaticResource SmallMutedTextStyle}"/>
+                            <TextBlock Text="  •  " Style="{StaticResource SmallMutedTextStyle}"/>
+                            <TextBlock
+                                Text="{Binding CreatedAt, StringFormat={}{0:dd.MM.yyyy HH:mm}}"
+                                Style="{StaticResource SmallMutedTextStyle}"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBlock
+                        Text="{Binding Title}"
+                        Margin="0,12,0,12"
+                        FontSize="18"
+                        FontWeight="SemiBold"
+                        Foreground="{StaticResource MainTextBrush}"
+                        TextWrapping="Wrap"/>
+
+                    <TextBlock Text="Problem description" Style="{StaticResource DetailLabelTextStyle}"/>
+                    <TextBlock
+                        Text="{Binding Description}"
+                        Margin="0,0,0,14"
+                        Style="{StaticResource DetailValueTextStyle}"/>
+
+                    <Border
+                        Padding="12"
+                        Background="White"
+                        BorderBrush="{StaticResource InputBorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="9">
+                        <StackPanel>
+                            <TextBlock Text="Solution" Style="{StaticResource DetailLabelTextStyle}"/>
+                            <TextBlock
+                                Text="{Binding Responses[0].Message, FallbackValue='No solution comment was added.'}"
+                                Style="{StaticResource DetailValueTextStyle}"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+        </DataTemplate>
     </Window.Resources>
 
     <Grid Background="{StaticResource WindowBackgroundBrush}">
@@ -94,13 +161,12 @@
                                    Style="{StaticResource WorkspaceErrorTextStyle}"/>
                     </StackPanel>
 
-                    <Button Grid.Column="1"
+                    <Button x:Name="KnowledgeBaseButton"
+                            Grid.Column="1"
                             Content="Knowledge base"
                             Margin="16,0"
                             Style="{StaticResource SecondaryButtonStyle}"
-                            IsEnabled="False"
-                            ToolTip="Knowledge base will be added later"
-                            ToolTipService.ShowOnDisabled="True"/>
+                            Click="KnowledgeBaseButton_Click"/>
 
                     <Grid Grid.Column="2">
                         <Grid.ColumnDefinitions>
@@ -453,6 +519,104 @@
                         </StackPanel>
                     </Border>
                 </StackPanel>
+            </Grid>
+        </Border>
+
+        <Border x:Name="KnowledgeBasePanel"
+                Margin="28,126,28,28"
+                Padding="24"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Style="{StaticResource WorkspaceCardStyle}"
+                Panel.ZIndex="7"
+                Visibility="Collapsed">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="22"
+                                  ShadowDepth="3"
+                                  Opacity="0.2"/>
+            </Border.Effect>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel>
+                        <TextBlock Text="Knowledge base"
+                                   Style="{StaticResource SectionTitleTextStyle}"/>
+                        <TextBlock Text="Published solutions for common problems"
+                                   Margin="0,5,0,0"
+                                   Style="{StaticResource SmallMutedTextStyle}"/>
+                        <TextBlock x:Name="WorkerKnowledgeBaseCountText"
+                                   Margin="0,5,0,0"
+                                   Style="{StaticResource SmallMutedTextStyle}"/>
+                        <TextBlock x:Name="WorkerKnowledgeBaseStatusMessageText"
+                                   Margin="0,5,0,0"
+                                   Style="{StaticResource WorkspaceErrorTextStyle}"/>
+                    </StackPanel>
+
+                    <Button x:Name="RefreshWorkerKnowledgeBaseButton"
+                            Grid.Column="1"
+                            Content="Refresh"
+                            Margin="0,0,12,0"
+                            Style="{StaticResource SecondaryButtonStyle}"
+                            Click="RefreshWorkerKnowledgeBaseButton_Click"/>
+                    <Button Grid.Column="2"
+                            Content="×"
+                            Style="{StaticResource ClosePanelButtonStyle}"
+                            Click="CloseKnowledgeBaseButton_Click"/>
+                </Grid>
+
+                <Grid Grid.Row="1" Margin="0,18,0,18">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel>
+                        <TextBlock Text="Search solutions"
+                                   Style="{StaticResource FieldLabelTextStyle}"/>
+                        <TextBox x:Name="WorkerKnowledgeBaseSearchTextBox"
+                                 MaxLength="120"
+                                 ToolTip="Search by ticket ID, problem or solution"
+                                 Style="{StaticResource WorkspaceTextBoxStyle}"
+                                 TextChanged="WorkerKnowledgeBaseSearchTextBox_TextChanged"/>
+                    </StackPanel>
+
+                    <Button x:Name="ClearWorkerKnowledgeBaseSearchButton"
+                            Grid.Column="1"
+                            Content="Clear"
+                            Margin="12,0,0,0"
+                            VerticalAlignment="Bottom"
+                            Style="{StaticResource SecondaryButtonStyle}"
+                            IsEnabled="False"
+                            Click="ClearWorkerKnowledgeBaseSearchButton_Click"/>
+                </Grid>
+
+                <Grid Grid.Row="2">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled">
+                        <ItemsControl x:Name="WorkerKnowledgeBaseList"
+                                      ItemTemplate="{StaticResource WorkerKnowledgeBaseTicketCardTemplate}"/>
+                    </ScrollViewer>
+
+                    <TextBlock x:Name="WorkerKnowledgeBaseEmptyText"
+                               Text="There are no published solutions yet."
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               TextAlignment="Center"
+                               Style="{StaticResource SmallMutedTextStyle}"
+                               Visibility="Collapsed"/>
+                </Grid>
             </Grid>
         </Border>
 

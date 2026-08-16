@@ -18,6 +18,7 @@ public partial class AdminWindow
         CancellationToken cancellationToken)
     {
         HideMessage(KnowledgeBaseStatusMessageText);
+        HideMessage(KnowledgeBaseSuccessMessageText);
 
         try
         {
@@ -230,6 +231,55 @@ public partial class AdminWindow
     private async void RefreshKnowledgeBaseButton_Click(object sender, RoutedEventArgs e)
     {
         await ReloadKnowledgeBaseAsync(false);
+    }
+
+    private async void KnowledgeBasePublicationButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        if (sender is not Button button ||
+            button.DataContext is not Ticket ticket)
+        {
+            return;
+        }
+
+        HideMessage(KnowledgeBaseStatusMessageText);
+        HideMessage(KnowledgeBaseSuccessMessageText);
+        button.IsEnabled = false;
+
+        try
+        {
+            var publishForWorkers = !ticket.IsKnowledgeBasePublished;
+            var publicationWasChanged = await _ticketService
+                .SetKnowledgeBasePublicationAsync(ticket.Id, publishForWorkers);
+
+            if (!publicationWasChanged)
+            {
+                ShowMessage(
+                    KnowledgeBaseStatusMessageText,
+                    "Only completed tickets can be published for workers.");
+                return;
+            }
+
+            ticket.IsKnowledgeBasePublished = publishForWorkers;
+            CompletedKnowledgeBaseList.Items.Refresh();
+
+            ShowMessage(
+                KnowledgeBaseSuccessMessageText,
+                publishForWorkers
+                    ? "The solution is now visible to workers."
+                    : "The solution is now visible only to administrators.");
+        }
+        catch (Exception exception) when (DatabaseExceptionClassifier.IsDatabaseFailure(exception))
+        {
+            ShowMessage(
+                KnowledgeBaseStatusMessageText,
+                "Publication could not be changed. Check the database connection.");
+        }
+        finally
+        {
+            button.IsEnabled = true;
+        }
     }
 
     private async void KnowledgeBaseSearchTextBox_TextChanged(

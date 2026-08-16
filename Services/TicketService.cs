@@ -134,6 +134,28 @@ public class TicketService
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<List<Ticket>> GetPublishedKnowledgeBaseTicketsAsync(
+        string? searchText = null,
+        CancellationToken cancellationToken = default)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+
+        var tickets = context.Tickets
+            .AsNoTracking()
+            .Where(ticket =>
+                ticket.IsKnowledgeBasePublished &&
+                (ticket.Status == TicketStatus.Resolved ||
+                 ticket.Status == TicketStatus.Closed));
+
+        tickets = ApplyKnowledgeBaseSearch(tickets, searchText);
+
+        return await tickets
+            .Include(ticket => ticket.Responses
+                .OrderByDescending(response => response.CreatedAt))
+            .OrderByDescending(ticket => ticket.CreatedAt)
+            .ToListAsync(cancellationToken);
+    }
+
     private static IQueryable<Ticket> ApplyKnowledgeBaseSearch(
         IQueryable<Ticket> tickets,
         string? searchText)
@@ -178,6 +200,24 @@ public class TicketService
             .ExecuteUpdateAsync(update => update
                 .SetProperty(ticket => ticket.AssignedAdminId, adminId)
                 .SetProperty(ticket => ticket.Status, TicketStatus.InProgress));
+
+        return changedRows == 1;
+    }
+
+    public async Task<bool> SetKnowledgeBasePublicationAsync(
+        int ticketId,
+        bool isPublished)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+
+        var changedRows = await context.Tickets
+            .Where(ticket =>
+                ticket.Id == ticketId &&
+                (ticket.Status == TicketStatus.Resolved ||
+                 ticket.Status == TicketStatus.Closed))
+            .ExecuteUpdateAsync(update => update.SetProperty(
+                ticket => ticket.IsKnowledgeBasePublished,
+                isPublished));
 
         return changedRows == 1;
     }
