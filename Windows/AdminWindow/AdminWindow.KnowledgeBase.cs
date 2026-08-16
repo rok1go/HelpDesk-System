@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Controls;
 using HelpDesk_System.Models;
 using HelpDesk_System.Models.Enums;
 using HelpDesk_System.Utilities;
@@ -7,21 +8,31 @@ namespace HelpDesk_System.Windows;
 
 public partial class AdminWindow
 {
-    private KnowledgeBaseSection _activeKnowledgeBaseSection = KnowledgeBaseSection.Completed;
+    private const int KnowledgeBaseSearchDelayMilliseconds = 350;
 
-    private async Task LoadKnowledgeBaseAsync()
+    private KnowledgeBaseSection _activeKnowledgeBaseSection = KnowledgeBaseSection.Completed;
+    private CancellationTokenSource? _knowledgeBaseLoadCancellation;
+
+    private async Task LoadKnowledgeBaseAsync(
+        string? searchText,
+        CancellationToken cancellationToken)
     {
-        KnowledgeBaseButton.IsEnabled = false;
-        RefreshKnowledgeBaseButton.IsEnabled = false;
         HideMessage(KnowledgeBaseStatusMessageText);
 
         try
         {
-            var ticketsTask = _ticketService.GetKnowledgeBaseTicketsAsync();
-            var registrationsTask = _registrationRequestService.GetProcessedRequestsAsync();
+            var ticketsTask = _ticketService.GetKnowledgeBaseTicketsAsync(
+                searchText,
+                cancellationToken);
+
+            var registrationsTask = _registrationRequestService.GetProcessedRequestsAsync(
+                searchText,
+                cancellationToken);
 
             await Task.WhenAll(ticketsTask, registrationsTask);
+            cancellationToken.ThrowIfCancellationRequested();
 
+            UpdateKnowledgeBaseEmptyText(!string.IsNullOrWhiteSpace(searchText));
             BindKnowledgeBaseTickets(await ticketsTask);
             BindProcessedRegistrations(await registrationsTask);
         }
@@ -31,11 +42,48 @@ public partial class AdminWindow
                 KnowledgeBaseStatusMessageText,
                 "Knowledge base could not be loaded. Check the database connection.");
         }
+    }
+
+    private async Task ReloadKnowledgeBaseAsync(bool delaySearch)
+    {
+        _knowledgeBaseLoadCancellation?.Cancel();
+
+        var cancellation = new CancellationTokenSource();
+        _knowledgeBaseLoadCancellation = cancellation;
+        SetKnowledgeBaseLoading(true);
+
+        try
+        {
+            if (delaySearch)
+            {
+                await Task.Delay(
+                    KnowledgeBaseSearchDelayMilliseconds,
+                    cancellation.Token);
+            }
+
+            await LoadKnowledgeBaseAsync(
+                KnowledgeBaseSearchTextBox.Text,
+                cancellation.Token);
+        }
+        catch (OperationCanceledException) when (cancellation.IsCancellationRequested)
+        {
+        }
         finally
         {
-            KnowledgeBaseButton.IsEnabled = true;
-            RefreshKnowledgeBaseButton.IsEnabled = true;
+            if (ReferenceEquals(_knowledgeBaseLoadCancellation, cancellation))
+            {
+                _knowledgeBaseLoadCancellation = null;
+                SetKnowledgeBaseLoading(false);
+            }
+
+            cancellation.Dispose();
         }
+    }
+
+    private void SetKnowledgeBaseLoading(bool isLoading)
+    {
+        KnowledgeBaseButton.IsEnabled = !isLoading;
+        RefreshKnowledgeBaseButton.IsEnabled = !isLoading;
     }
 
     private void BindKnowledgeBaseTickets(List<Ticket> tickets)
@@ -92,6 +140,29 @@ public partial class AdminWindow
         return itemCount == 0 ? Visibility.Visible : Visibility.Collapsed;
     }
 
+    private void UpdateKnowledgeBaseEmptyText(bool isSearchActive)
+    {
+        CompletedKnowledgeBaseEmptyText.Text = isSearchActive
+            ? "No completed tickets match your search."
+            : "There are no completed tickets yet.";
+
+        DeclinedKnowledgeBaseEmptyText.Text = isSearchActive
+            ? "No declined tickets match your search."
+            : "There are no declined tickets yet.";
+
+        InProgressKnowledgeBaseEmptyText.Text = isSearchActive
+            ? "No in-progress tickets match your search."
+            : "There are no tickets in progress.";
+
+        ApprovedRegistrationsEmptyText.Text = isSearchActive
+            ? "No approved registrations match your search."
+            : "There are no approved registrations yet.";
+
+        DeclinedRegistrationsEmptyText.Text = isSearchActive
+            ? "No declined registrations match your search."
+            : "There are no declined registrations yet.";
+    }
+
     private async void KnowledgeBaseButton_Click(object sender, RoutedEventArgs e)
     {
         HideTicketDetails();
@@ -99,7 +170,7 @@ public partial class AdminWindow
         ShowKnowledgeBaseSection(_activeKnowledgeBaseSection);
         KnowledgeBasePanel.Visibility = Visibility.Visible;
 
-        await LoadKnowledgeBaseAsync();
+        await ReloadKnowledgeBaseAsync(false);
     }
 
     private void CompletedKnowledgeBaseButton_Click(object sender, RoutedEventArgs e)
@@ -158,7 +229,34 @@ public partial class AdminWindow
 
     private async void RefreshKnowledgeBaseButton_Click(object sender, RoutedEventArgs e)
     {
-        await LoadKnowledgeBaseAsync();
+        await ReloadKnowledgeBaseAsync(false);
+    }
+
+    private async void KnowledgeBaseSearchTextBox_TextChanged(
+        object sender,
+        TextChangedEventArgs e)
+    {
+        ClearKnowledgeBaseSearchButton.IsEnabled =
+            !string.IsNullOrWhiteSpace(KnowledgeBaseSearchTextBox.Text);
+
+        if (!IsLoaded || KnowledgeBasePanel.Visibility != Visibility.Visible)
+        {
+            return;
+        }
+
+        await ReloadKnowledgeBaseAsync(true);
+    }
+
+    private async void ClearKnowledgeBaseSearchButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (string.IsNullOrEmpty(KnowledgeBaseSearchTextBox.Text))
+        {
+            await ReloadKnowledgeBaseAsync(false);
+            return;
+        }
+
+        KnowledgeBaseSearchTextBox.Clear();
+        await ReloadKnowledgeBaseAsync(false);
     }
 
     private void CloseKnowledgeBaseButton_Click(object sender, RoutedEventArgs e)
@@ -168,6 +266,7 @@ public partial class AdminWindow
 
     private void HideKnowledgeBasePanel()
     {
+        _knowledgeBaseLoadCancellation?.Cancel();
         KnowledgeBasePanel.Visibility = Visibility.Collapsed;
     }
 

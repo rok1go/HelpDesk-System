@@ -7,6 +7,8 @@ namespace HelpDesk_System.Services;
 
 public class TicketService
 {
+    private const string TextSearchConfiguration = "simple";
+
     private readonly IDbContextFactory<HelpDeskDbContext> _contextFactory;
     private readonly TicketPriorityCalculator _priorityCalculator;
 
@@ -106,24 +108,62 @@ public class TicketService
             .ToListAsync();
     }
 
-    public async Task<List<Ticket>> GetKnowledgeBaseTicketsAsync()
+    public async Task<List<Ticket>> GetKnowledgeBaseTicketsAsync(
+        string? searchText = null,
+        CancellationToken cancellationToken = default)
     {
-        await using var context = await _contextFactory.CreateDbContextAsync();
+        await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
-        return await context.Tickets
+        var tickets = context.Tickets
             .AsNoTracking()
+            .Where(ticket =>
+                ticket.Status == TicketStatus.InProgress ||
+                ticket.Status == TicketStatus.Resolved ||
+                ticket.Status == TicketStatus.Closed ||
+                ticket.Status == TicketStatus.Declined);
+
+        tickets = ApplyKnowledgeBaseSearch(tickets, searchText);
+
+        return await tickets
             .Include(ticket => ticket.Author)
             .Include(ticket => ticket.AssignedAdmin)
             .Include(ticket => ticket.Responses
                 .OrderByDescending(response => response.CreatedAt))
             .ThenInclude(response => response.Author)
-            .Where(ticket =>
-                ticket.Status == TicketStatus.InProgress ||
-                ticket.Status == TicketStatus.Resolved ||
-                ticket.Status == TicketStatus.Closed ||
-                ticket.Status == TicketStatus.Declined)
             .OrderByDescending(ticket => ticket.CreatedAt)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
+    }
+
+    private static IQueryable<Ticket> ApplyKnowledgeBaseSearch(
+        IQueryable<Ticket> tickets,
+        string? searchText)
+    {
+        var normalizedSearch = searchText?.Trim();
+        if (string.IsNullOrWhiteSpace(normalizedSearch))
+        {
+            return tickets;
+        }
+
+        var ticketId = int.TryParse(normalizedSearch, out var parsedTicketId)
+            ? parsedTicketId
+            : -1;
+
+        return tickets.Where(ticket =>
+            ticket.Id == ticketId ||
+            EF.Functions.ToTsVector(
+                    TextSearchConfiguration,
+                    (ticket.Title ?? string.Empty) + " " +
+                    (ticket.Description ?? string.Empty))
+                .Matches(EF.Functions.WebSearchToTsQuery(
+                    TextSearchConfiguration,
+                    normalizedSearch)) ||
+            ticket.Responses.Any(response =>
+                EF.Functions.ToTsVector(
+                        TextSearchConfiguration,
+                        response.Message ?? string.Empty)
+                    .Matches(EF.Functions.WebSearchToTsQuery(
+                        TextSearchConfiguration,
+                        normalizedSearch))));
     }
 
     public async Task<bool> TakeTicketAsync(int ticketId, int adminId)

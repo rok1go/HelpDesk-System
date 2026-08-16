@@ -805,6 +805,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
@@ -841,7 +842,36 @@
                         Click="CloseKnowledgeBaseButton_Click"/>
                 </Grid>
 
-                <StackPanel Grid.Row="1" Margin="0,20,0,18" Orientation="Horizontal">
+                <Grid Grid.Row="1" Margin="0,18,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel>
+                        <TextBlock
+                            Text="Search tickets and registrations"
+                            Style="{StaticResource FieldLabelTextStyle}"/>
+                        <TextBox
+                            x:Name="KnowledgeBaseSearchTextBox"
+                            MaxLength="120"
+                            ToolTip="Search by ticket ID, text, comment, applicant or email"
+                            Style="{StaticResource WorkspaceTextBoxStyle}"
+                            TextChanged="KnowledgeBaseSearchTextBox_TextChanged"/>
+                    </StackPanel>
+
+                    <Button
+                        x:Name="ClearKnowledgeBaseSearchButton"
+                        Grid.Column="1"
+                        Content="Clear"
+                        Margin="12,0,0,0"
+                        VerticalAlignment="Bottom"
+                        Style="{StaticResource SecondaryButtonStyle}"
+                        IsEnabled="False"
+                        Click="ClearKnowledgeBaseSearchButton_Click"/>
+                </Grid>
+
+                <StackPanel Grid.Row="2" Margin="0,18,0,18" Orientation="Horizontal">
                     <Button
                         x:Name="CompletedKnowledgeBaseButton"
                         Content="Completed"
@@ -865,7 +895,7 @@
                         Click="RegistrationsKnowledgeBaseButton_Click"/>
                 </StackPanel>
 
-                <Grid Grid.Row="2">
+                <Grid Grid.Row="3">
                     <Grid x:Name="CompletedKnowledgeBaseView">
                         <ScrollViewer
                             VerticalScrollBarVisibility="Auto"

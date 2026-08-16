@@ -7,6 +7,8 @@ namespace HelpDesk_System.Services;
 
 public class RegistrationRequestService
 {
+    private const string TextSearchConfiguration = "simple";
+
     private readonly IDbContextFactory<HelpDeskDbContext> _contextFactory;
 
     public RegistrationRequestService(IDbContextFactory<HelpDeskDbContext> contextFactory)
@@ -25,18 +27,47 @@ public class RegistrationRequestService
             .ToListAsync();
     }
 
-    public async Task<List<RegistrationRequest>> GetProcessedRequestsAsync()
+    public async Task<List<RegistrationRequest>> GetProcessedRequestsAsync(
+        string? searchText = null,
+        CancellationToken cancellationToken = default)
     {
-        await using var context = await _contextFactory.CreateDbContextAsync();
+        await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
-        return await context.RegistrationRequests
+        var requests = context.RegistrationRequests
             .AsNoTracking()
-            .Include(request => request.ProcessedByAdmin)
             .Where(request =>
                 request.Status == RegistrationRequestStatus.Approved ||
-                request.Status == RegistrationRequestStatus.Declined)
+                request.Status == RegistrationRequestStatus.Declined);
+
+        requests = ApplyProcessedRequestSearch(requests, searchText);
+
+        return await requests
+            .Include(request => request.ProcessedByAdmin)
             .OrderByDescending(request => request.ProcessedAt)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
+    }
+
+    private static IQueryable<RegistrationRequest> ApplyProcessedRequestSearch(
+        IQueryable<RegistrationRequest> requests,
+        string? searchText)
+    {
+        var normalizedSearch = searchText?.Trim().ToLowerInvariant();
+        if (string.IsNullOrWhiteSpace(normalizedSearch))
+        {
+            return requests;
+        }
+
+        return requests.Where(request =>
+            request.Email.Contains(normalizedSearch) ||
+            EF.Functions.ToTsVector(
+                    TextSearchConfiguration,
+                    (request.FirstName ?? string.Empty) + " " +
+                    (request.LastName ?? string.Empty) + " " +
+                    (request.Email ?? string.Empty) + " " +
+                    (request.DecisionReason ?? string.Empty))
+                .Matches(EF.Functions.WebSearchToTsQuery(
+                    TextSearchConfiguration,
+                    normalizedSearch)));
     }
 
     public async Task<bool> SubmitAsync(
