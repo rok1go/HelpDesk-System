@@ -25,6 +25,20 @@ public class RegistrationRequestService
             .ToListAsync();
     }
 
+    public async Task<List<RegistrationRequest>> GetProcessedRequestsAsync()
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+
+        return await context.RegistrationRequests
+            .AsNoTracking()
+            .Include(request => request.ProcessedByAdmin)
+            .Where(request =>
+                request.Status == RegistrationRequestStatus.Approved ||
+                request.Status == RegistrationRequestStatus.Declined)
+            .OrderByDescending(request => request.ProcessedAt)
+            .ToListAsync();
+    }
+
     public async Task<bool> SubmitAsync(
         string firstName,
         string lastName,

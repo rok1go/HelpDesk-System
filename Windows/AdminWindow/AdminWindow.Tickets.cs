@@ -77,6 +77,7 @@ public partial class AdminWindow
         if (sender is Button { DataContext: Ticket ticket })
         {
             HideRegistrationRequestsPanel();
+            HideKnowledgeBasePanel();
             ShowTicketDetails(ticket);
         }
     }

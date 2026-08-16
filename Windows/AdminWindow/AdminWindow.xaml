@@ -107,6 +107,201 @@
                 </Grid>
             </Button>
         </DataTemplate>
+
+        <Style
+            x:Key="KnowledgeBaseNavigationButtonStyle"
+            TargetType="Button"
+            BasedOn="{StaticResource SecondaryButtonStyle}">
+            <Setter Property="Margin" Value="0,0,10,0"/>
+            <Style.Triggers>
+                <Trigger Property="Tag" Value="Selected">
+                    <Setter Property="Background" Value="{StaticResource PrimaryButtonBrush}"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <DataTemplate x:Key="KnowledgeBaseTicketCardTemplate">
+            <Border
+                Margin="0,0,0,12"
+                Padding="18"
+                Background="{StaticResource InputBackgroundBrush}"
+                BorderBrush="{StaticResource InputBorderBrush}"
+                BorderThickness="1"
+                CornerRadius="12">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Border Style="{StaticResource TicketBadgeStyle}">
+                            <TextBlock
+                                Text="{Binding Status, Converter={StaticResource EnumDisplayConverter}}"
+                                FontSize="12"
+                                FontWeight="SemiBold"
+                                Foreground="{StaticResource FieldTextBrush}"/>
+                        </Border>
+
+                        <StackPanel
+                            Grid.Column="1"
+                            HorizontalAlignment="Right"
+                            Orientation="Horizontal">
+                            <TextBlock Text="#" Style="{StaticResource SmallMutedTextStyle}"/>
+                            <TextBlock Text="{Binding Id}" Style="{StaticResource SmallMutedTextStyle}"/>
+                            <TextBlock Text="  •  " Style="{StaticResource SmallMutedTextStyle}"/>
+                            <TextBlock
+                                Text="{Binding CreatedAt, StringFormat={}{0:dd.MM.yyyy HH:mm}}"
+                                Style="{StaticResource SmallMutedTextStyle}"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBlock
+                        Text="{Binding Title}"
+                        Margin="0,12,0,12"
+                        FontSize="18"
+                        FontWeight="SemiBold"
+                        Foreground="{StaticResource MainTextBrush}"
+                        TextWrapping="Wrap"/>
+
+                    <Grid Margin="0,0,0,14">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel>
+                            <TextBlock Text="Author" Style="{StaticResource DetailLabelTextStyle}"/>
+                            <TextBlock Style="{StaticResource DetailValueTextStyle}">
+                                <Run Text="{Binding Author.FirstName}"/>
+                                <Run Text=" "/>
+                                <Run Text="{Binding Author.LastName}"/>
+                            </TextBlock>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="Assigned specialist" Style="{StaticResource DetailLabelTextStyle}"/>
+                            <TextBlock Style="{StaticResource DetailValueTextStyle}">
+                                <Run
+                                    Text="{Binding AssignedAdmin.FirstName, FallbackValue='Not assigned'}"/>
+                                <Run Text=" "/>
+                                <Run Text="{Binding AssignedAdmin.LastName}"/>
+                            </TextBlock>
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBlock Text="Description" Style="{StaticResource DetailLabelTextStyle}"/>
+                    <TextBlock
+                        Text="{Binding Description}"
+                        Margin="0,0,0,14"
+                        Style="{StaticResource DetailValueTextStyle}"/>
+
+                    <Border
+                        Padding="12"
+                        Background="White"
+                        BorderBrush="{StaticResource InputBorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="9">
+                        <StackPanel>
+                            <TextBlock Text="Attached comment" Style="{StaticResource DetailLabelTextStyle}"/>
+                            <TextBlock
+                                Text="{Binding Responses[0].Message, FallbackValue='No comment was added.'}"
+                                Style="{StaticResource DetailValueTextStyle}"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+
+        <DataTemplate x:Key="RegistrationArchiveCardTemplate">
+            <Border
+                Margin="0,0,0,12"
+                Padding="16"
+                Background="{StaticResource InputBackgroundBrush}"
+                BorderBrush="{StaticResource InputBorderBrush}"
+                BorderThickness="1"
+                CornerRadius="12">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Border Style="{StaticResource TicketBadgeStyle}">
+                            <TextBlock
+                                Text="{Binding Status, Converter={StaticResource EnumDisplayConverter}}"
+                                FontSize="12"
+                                FontWeight="SemiBold"
+                                Foreground="{StaticResource FieldTextBrush}"/>
+                        </Border>
+
+                        <TextBlock
+                            Grid.Column="1"
+                            Text="{Binding ProcessedAt, StringFormat={}{0:dd.MM.yyyy HH:mm}}"
+                            HorizontalAlignment="Right"
+                            Style="{StaticResource SmallMutedTextStyle}"/>
+                    </Grid>
+
+                    <TextBlock
+                        Margin="0,12,0,3"
+                        FontSize="17"
+                        FontWeight="SemiBold"
+                        Foreground="{StaticResource MainTextBrush}">
+                        <Run Text="{Binding FirstName}"/><Run Text=" "/><Run Text="{Binding LastName}"/>
+                    </TextBlock>
+                    <TextBlock
+                        Text="{Binding Email}"
+                        Margin="0,0,0,12"
+                        Style="{StaticResource SmallMutedTextStyle}"/>
+
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel>
+                            <TextBlock Text="Requested role" Style="{StaticResource DetailLabelTextStyle}"/>
+                            <TextBlock
+                                Text="{Binding RequestedRole, Converter={StaticResource EnumDisplayConverter}}"
+                                Style="{StaticResource DetailValueTextStyle}"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="Assigned role" Style="{StaticResource DetailLabelTextStyle}"/>
+                            <TextBlock
+                                Text="{Binding AssignedRole, TargetNullValue='Not assigned'}"
+                                Style="{StaticResource DetailValueTextStyle}"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBlock Style="{StaticResource SmallMutedTextStyle}">
+                        <Run Text="Processed by "/>
+                        <Run
+                            Text="{Binding ProcessedByAdmin.FirstName, FallbackValue='Unknown administrator'}"/>
+                        <Run Text=" "/>
+                        <Run Text="{Binding ProcessedByAdmin.LastName}"/>
+                    </TextBlock>
+
+                    <Border
+                        Margin="0,12,0,0"
+                        Padding="12"
+                        Background="White"
+                        BorderBrush="{StaticResource InputBorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="9">
+                        <StackPanel>
+                            <TextBlock Text="Decision comment" Style="{StaticResource DetailLabelTextStyle}"/>
+                            <TextBlock
+                                Text="{Binding DecisionReason, TargetNullValue='No decision comment was added.'}"
+                                Style="{StaticResource DetailValueTextStyle}"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+        </DataTemplate>
     </Window.Resources>
 
     <Grid Background="{StaticResource WindowBackgroundBrush}">
@@ -150,13 +345,12 @@
                         Click="RegistrationRequestsButton_Click"/>
 
                     <Button
+                        x:Name="KnowledgeBaseButton"
                         Grid.Column="2"
                         Content="Knowledge base"
                         Margin="16,0"
                         Style="{StaticResource SecondaryButtonStyle}"
-                        IsEnabled="False"
-                        ToolTip="Knowledge base will be added later"
-                        ToolTipService.ShowOnDisabled="True"/>
+                        Click="KnowledgeBaseButton_Click"/>
 
                     <Grid Grid.Column="3">
                         <Grid.ColumnDefinitions>
@@ -590,6 +784,202 @@
                             </ScrollViewer>
                         </Grid>
                     </Border>
+                </Grid>
+            </Grid>
+        </Border>
+
+        <Border
+            x:Name="KnowledgeBasePanel"
+            Margin="28,126,28,28"
+            Padding="24"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            Style="{StaticResource WorkspaceCardStyle}"
+            Panel.ZIndex="7"
+            Visibility="Collapsed">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="22" ShadowDepth="3" Opacity="0.2"/>
+            </Border.Effect>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel>
+                        <TextBlock Text="Knowledge base" Style="{StaticResource SectionTitleTextStyle}"/>
+                        <TextBlock
+                            Text="Ticket archive and processed account registrations"
+                            Margin="0,5,0,0"
+                            Style="{StaticResource SmallMutedTextStyle}"/>
+                        <TextBlock
+                            x:Name="KnowledgeBaseStatusMessageText"
+                            Margin="0,5,0,0"
+                            Style="{StaticResource WorkspaceErrorTextStyle}"/>
+                    </StackPanel>
+
+                    <Button
+                        x:Name="RefreshKnowledgeBaseButton"
+                        Grid.Column="1"
+                        Content="Refresh"
+                        Margin="0,0,12,0"
+                        Style="{StaticResource SecondaryButtonStyle}"
+                        Click="RefreshKnowledgeBaseButton_Click"/>
+                    <Button
+                        Grid.Column="2"
+                        Content="×"
+                        Style="{StaticResource ClosePanelButtonStyle}"
+                        Click="CloseKnowledgeBaseButton_Click"/>
+                </Grid>
+
+                <StackPanel Grid.Row="1" Margin="0,20,0,18" Orientation="Horizontal">
+                    <Button
+                        x:Name="CompletedKnowledgeBaseButton"
+                        Content="Completed"
+                        Tag="Selected"
+                        Style="{StaticResource KnowledgeBaseNavigationButtonStyle}"
+                        Click="CompletedKnowledgeBaseButton_Click"/>
+                    <Button
+                        x:Name="DeclinedKnowledgeBaseButton"
+                        Content="Declined"
+                        Style="{StaticResource KnowledgeBaseNavigationButtonStyle}"
+                        Click="DeclinedKnowledgeBaseButton_Click"/>
+                    <Button
+                        x:Name="InProgressKnowledgeBaseButton"
+                        Content="In progress"
+                        Style="{StaticResource KnowledgeBaseNavigationButtonStyle}"
+                        Click="InProgressKnowledgeBaseButton_Click"/>
+                    <Button
+                        x:Name="RegistrationsKnowledgeBaseButton"
+                        Content="Registrations"
+                        Style="{StaticResource KnowledgeBaseNavigationButtonStyle}"
+                        Click="RegistrationsKnowledgeBaseButton_Click"/>
+                </StackPanel>
+
+                <Grid Grid.Row="2">
+                    <Grid x:Name="CompletedKnowledgeBaseView">
+                        <ScrollViewer
+                            VerticalScrollBarVisibility="Auto"
+                            HorizontalScrollBarVisibility="Disabled">
+                            <ItemsControl
+                                x:Name="CompletedKnowledgeBaseList"
+                                ItemTemplate="{StaticResource KnowledgeBaseTicketCardTemplate}"/>
+                        </ScrollViewer>
+                        <TextBlock
+                            x:Name="CompletedKnowledgeBaseEmptyText"
+                            Text="There are no completed tickets yet."
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Style="{StaticResource SmallMutedTextStyle}"
+                            Visibility="Collapsed"/>
+                    </Grid>
+
+                    <Grid x:Name="DeclinedKnowledgeBaseView" Visibility="Collapsed">
+                        <ScrollViewer
+                            VerticalScrollBarVisibility="Auto"
+                            HorizontalScrollBarVisibility="Disabled">
+                            <ItemsControl
+                                x:Name="DeclinedKnowledgeBaseList"
+                                ItemTemplate="{StaticResource KnowledgeBaseTicketCardTemplate}"/>
+                        </ScrollViewer>
+                        <TextBlock
+                            x:Name="DeclinedKnowledgeBaseEmptyText"
+                            Text="There are no declined tickets yet."
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Style="{StaticResource SmallMutedTextStyle}"
+                            Visibility="Collapsed"/>
+                    </Grid>
+
+                    <Grid x:Name="InProgressKnowledgeBaseView" Visibility="Collapsed">
+                        <ScrollViewer
+                            VerticalScrollBarVisibility="Auto"
+                            HorizontalScrollBarVisibility="Disabled">
+                            <ItemsControl
+                                x:Name="InProgressKnowledgeBaseList"
+                                ItemTemplate="{StaticResource KnowledgeBaseTicketCardTemplate}"/>
+                        </ScrollViewer>
+                        <TextBlock
+                            x:Name="InProgressKnowledgeBaseEmptyText"
+                            Text="There are no tickets in progress."
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Style="{StaticResource SmallMutedTextStyle}"
+                            Visibility="Collapsed"/>
+                    </Grid>
+
+                    <Grid x:Name="RegistrationsKnowledgeBaseView" Visibility="Collapsed">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="18"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock
+                                Text="Approved registrations"
+                                Margin="0,0,0,12"
+                                Style="{StaticResource SectionTitleTextStyle}"/>
+                            <Grid Grid.Row="1">
+                                <ScrollViewer
+                                    VerticalScrollBarVisibility="Auto"
+                                    HorizontalScrollBarVisibility="Disabled">
+                                    <ItemsControl
+                                        x:Name="ApprovedRegistrationsList"
+                                        ItemTemplate="{StaticResource RegistrationArchiveCardTemplate}"/>
+                                </ScrollViewer>
+                                <TextBlock
+                                    x:Name="ApprovedRegistrationsEmptyText"
+                                    Text="There are no approved registrations yet."
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    TextAlignment="Center"
+                                    Style="{StaticResource SmallMutedTextStyle}"
+                                    Visibility="Collapsed"/>
+                            </Grid>
+                        </Grid>
+
+                        <Grid Grid.Column="2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock
+                                Text="Declined registrations"
+                                Margin="0,0,0,12"
+                                Style="{StaticResource SectionTitleTextStyle}"/>
+                            <Grid Grid.Row="1">
+                                <ScrollViewer
+                                    VerticalScrollBarVisibility="Auto"
+                                    HorizontalScrollBarVisibility="Disabled">
+                                    <ItemsControl
+                                        x:Name="DeclinedRegistrationsList"
+                                        ItemTemplate="{StaticResource RegistrationArchiveCardTemplate}"/>
+                                </ScrollViewer>
+                                <TextBlock
+                                    x:Name="DeclinedRegistrationsEmptyText"
+                                    Text="There are no declined registrations yet."
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    TextAlignment="Center"
+                                    Style="{StaticResource SmallMutedTextStyle}"
+                                    Visibility="Collapsed"/>
+                            </Grid>
+                        </Grid>
+                    </Grid>
                 </Grid>
             </Grid>
         </Border>

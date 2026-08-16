@@ -106,6 +106,26 @@ public class TicketService
             .ToListAsync();
     }
 
+    public async Task<List<Ticket>> GetKnowledgeBaseTicketsAsync()
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+
+        return await context.Tickets
+            .AsNoTracking()
+            .Include(ticket => ticket.Author)
+            .Include(ticket => ticket.AssignedAdmin)
+            .Include(ticket => ticket.Responses
+                .OrderByDescending(response => response.CreatedAt))
+            .ThenInclude(response => response.Author)
+            .Where(ticket =>
+                ticket.Status == TicketStatus.InProgress ||
+                ticket.Status == TicketStatus.Resolved ||
+                ticket.Status == TicketStatus.Closed ||
+                ticket.Status == TicketStatus.Declined)
+            .OrderByDescending(ticket => ticket.CreatedAt)
+            .ToListAsync();
+    }
+
     public async Task<bool> TakeTicketAsync(int ticketId, int adminId)
     {
         await using var context = await _contextFactory.CreateDbContextAsync();

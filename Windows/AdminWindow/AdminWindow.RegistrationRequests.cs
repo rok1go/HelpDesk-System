@@ -57,6 +57,7 @@ public partial class AdminWindow
     private void RegistrationRequestsButton_Click(object sender, RoutedEventArgs e)
     {
         HideTicketDetails();
+        HideKnowledgeBasePanel();
         RegistrationRequestsPanel.Visibility = Visibility.Visible;
     }
 
