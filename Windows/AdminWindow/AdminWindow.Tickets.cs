@@ -97,12 +97,15 @@ public partial class AdminWindow
         DetailsDescriptionText.Text = ticket.Description;
 
         DeclineReasonTextBox.Clear();
+        ResolutionTextBox.Clear();
         HideMessage(TicketActionMessageText);
         HideMessage(TicketDeclineReasonErrorText);
 
         var isOpen = ticket.Status == TicketStatus.Open;
         OpenTicketActionsPanel.Visibility = isOpen ? Visibility.Visible : Visibility.Collapsed;
-        AssignedTicketInfo.Visibility = isOpen ? Visibility.Collapsed : Visibility.Visible;
+        AssignedTicketActionsPanel.Visibility = isOpen
+            ? Visibility.Collapsed
+            : Visibility.Visible;
         TicketDetailsPanel.Visibility = Visibility.Visible;
 
         if (!animate)
@@ -234,6 +237,44 @@ public partial class AdminWindow
         }
     }
 
+    private async void CompleteTicketButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_selectedTicket is null)
+        {
+            return;
+        }
+
+        SetActionButtonsEnabled(false);
+
+        try
+        {
+            var ticketWasCompleted = await _ticketService.CompleteTicketAsync(
+                _selectedTicket.Id,
+                _currentAdmin.Id,
+                ResolutionTextBox.Text);
+
+            if (!ticketWasCompleted)
+            {
+                ShowMessage(
+                    TicketActionMessageText,
+                    "This ticket can no longer be completed. Refresh the list and try again.");
+
+                return;
+            }
+
+            HideTicketDetails();
+            await LoadTicketsAsync();
+        }
+        catch (Exception exception) when (DatabaseExceptionClassifier.IsDatabaseFailure(exception))
+        {
+            ShowMessage(TicketActionMessageText, "The ticket could not be completed. Please try again.");
+        }
+        finally
+        {
+            SetActionButtonsEnabled(true);
+        }
+    }
+
     private async void RefreshButton_Click(object sender, RoutedEventArgs e)
     {
         await LoadTicketsAsync();
@@ -248,6 +289,7 @@ public partial class AdminWindow
     {
         TakeTicketButton.IsEnabled = isEnabled;
         DeclineTicketButton.IsEnabled = isEnabled;
+        CompleteTicketButton.IsEnabled = isEnabled;
     }
 
     private void DeclineReasonTextBox_TextChanged(object sender, TextChangedEventArgs e)

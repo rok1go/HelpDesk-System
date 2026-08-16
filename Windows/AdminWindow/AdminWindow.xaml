@@ -400,17 +400,30 @@
                             Click="DeclineTicketButton_Click"/>
                     </StackPanel>
 
-                    <Border
-                        x:Name="AssignedTicketInfo"
-                        Padding="14"
-                        Background="#F3F4F6"
-                        CornerRadius="10"
+                    <StackPanel
+                        x:Name="AssignedTicketActionsPanel"
                         Visibility="Collapsed">
-                        <TextBlock
-                            Text="This ticket is already in your work list."
-                            TextWrapping="Wrap"
-                            Style="{StaticResource SmallMutedTextStyle}"/>
-                    </Border>
+                        <Border
+                            Padding="14"
+                            Margin="0,0,0,14"
+                            Background="#F3F4F6"
+                            CornerRadius="10">
+                            <TextBlock
+                                Text="Add an optional resolution note, then complete the ticket."
+                                TextWrapping="Wrap"
+                                Style="{StaticResource SmallMutedTextStyle}"/>
+                        </Border>
+                        <TextBlock Text="Resolution note (optional)" Style="{StaticResource FieldLabelTextStyle}"/>
+                        <TextBox
+                            x:Name="ResolutionTextBox"
+                            Margin="0,0,0,14"
+                            Style="{StaticResource WorkspaceTextAreaStyle}"/>
+                        <Button
+                            x:Name="CompleteTicketButton"
+                            Content="Complete ticket"
+                            Style="{StaticResource PrimaryButtonStyle}"
+                            Click="CompleteTicketButton_Click"/>
+                    </StackPanel>
                 </StackPanel>
             </Grid>
         </Border>

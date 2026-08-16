@@ -100,8 +100,7 @@ public class TicketService
             .Include(ticket => ticket.Author)
             .Where(ticket =>
                 ticket.AssignedAdminId == adminId &&
-                ticket.Status != TicketStatus.Closed &&
-                ticket.Status != TicketStatus.Declined)
+                ticket.Status == TicketStatus.InProgress)
             .OrderByDescending(ticket => ticket.Priority)
             .ThenBy(ticket => ticket.CreatedAt)
             .ToListAsync();
@@ -121,6 +120,45 @@ public class TicketService
                 .SetProperty(ticket => ticket.Status, TicketStatus.InProgress));
 
         return changedRows == 1;
+    }
+
+    public async Task<bool> CompleteTicketAsync(
+        int ticketId,
+        int adminId,
+        string resolution)
+    {
+        resolution = resolution.Trim();
+
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        await using var transaction = await context.Database.BeginTransactionAsync();
+
+        var changedRows = await context.Tickets
+            .Where(ticket =>
+                ticket.Id == ticketId &&
+                ticket.AssignedAdminId == adminId &&
+                ticket.Status == TicketStatus.InProgress)
+            .ExecuteUpdateAsync(update => update
+                .SetProperty(ticket => ticket.Status, TicketStatus.Resolved));
+
+        if (changedRows != 1)
+        {
+            await transaction.RollbackAsync();
+            return false;
+        }
+
+        if (!string.IsNullOrWhiteSpace(resolution))
+        {
+            context.TicketResponses.Add(new TicketResponse
+            {
+                TicketId = ticketId,
+                AuthorId = adminId,
+                Message = resolution
+            });
+            await context.SaveChangesAsync();
+        }
+
+        await transaction.CommitAsync();
+        return true;
     }
 
     public async Task<bool> DeclineTicketAsync(int ticketId, int adminId, string reason)
