@@ -85,6 +85,7 @@ public partial class AdminWindow
     private void ShowTicketDetails(Ticket ticket, bool animate = true)
     {
         _selectedTicket = ticket;
+        TicketDetailsPanel.DataContext = ticket;
 
         DetailsStatusText.Text = DisplayFormatter.FormatEnum(ticket.Status);
         DetailsAuthorNameText.Text = $"{ticket.Author.FirstName} {ticket.Author.LastName}".Trim();
@@ -99,8 +100,11 @@ public partial class AdminWindow
 
         DeclineReasonTextBox.Clear();
         ResolutionTextBox.Clear();
+        AdminCommentTextBox.Clear();
         HideMessage(TicketActionMessageText);
         HideMessage(TicketDeclineReasonErrorText);
+        HideMessage(TicketCommentErrorText);
+        HideMessage(TicketCommentSuccessText);
 
         var isOpen = ticket.Status == TicketStatus.Open;
         OpenTicketActionsPanel.Visibility = isOpen ? Visibility.Visible : Visibility.Collapsed;
@@ -132,6 +136,7 @@ public partial class AdminWindow
     private void HideTicketDetails()
     {
         _selectedTicket = null;
+        TicketDetailsPanel.DataContext = null;
 
         if (TicketDetailsPanel.Visibility != Visibility.Visible)
         {
@@ -276,6 +281,56 @@ public partial class AdminWindow
         }
     }
 
+    private async void AddAdminCommentButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_selectedTicket is null)
+        {
+            return;
+        }
+
+        var comment = AdminCommentTextBox.Text.Trim();
+        if (string.IsNullOrWhiteSpace(comment))
+        {
+            ShowMessage(TicketCommentErrorText, "Enter a comment.");
+            return;
+        }
+
+        HideMessage(TicketCommentErrorText);
+        HideMessage(TicketCommentSuccessText);
+        SetActionButtonsEnabled(false);
+
+        try
+        {
+            var commentWasAdded = await _ticketService.AddCommentAsync(
+                _selectedTicket.Id,
+                _currentAdmin.Id,
+                comment);
+
+            if (!commentWasAdded)
+            {
+                await LoadTicketsAsync();
+                ShowMessage(
+                    TicketCommentErrorText,
+                    "The comment could not be added because the ticket state changed.");
+
+                return;
+            }
+
+            await LoadTicketsAsync();
+            ShowMessage(TicketCommentSuccessText, "Comment added.");
+        }
+        catch (Exception exception) when (DatabaseExceptionClassifier.IsDatabaseFailure(exception))
+        {
+            ShowMessage(
+                TicketCommentErrorText,
+                "The comment could not be added. Check the database connection.");
+        }
+        finally
+        {
+            SetActionButtonsEnabled(true);
+        }
+    }
+
     private async void RefreshButton_Click(object sender, RoutedEventArgs e)
     {
         await LoadTicketsAsync();
@@ -291,6 +346,7 @@ public partial class AdminWindow
         TakeTicketButton.IsEnabled = isEnabled;
         DeclineTicketButton.IsEnabled = isEnabled;
         CompleteTicketButton.IsEnabled = isEnabled;
+        AddAdminCommentButton.IsEnabled = isEnabled;
     }
 
     private void DeclineReasonTextBox_TextChanged(object sender, TextChangedEventArgs e)

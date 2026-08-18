@@ -13,6 +13,7 @@ public class HelpDeskDbContext : DbContext
     public DbSet<User> Users => Set<User>();
     public DbSet<Ticket> Tickets => Set<Ticket>();
     public DbSet<TicketResponse> TicketResponses => Set<TicketResponse>();
+    public DbSet<TicketHistoryEntry> TicketHistoryEntries => Set<TicketHistoryEntry>();
     public DbSet<RegistrationRequest> RegistrationRequests => Set<RegistrationRequest>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -27,6 +28,18 @@ public class HelpDeskDbContext : DbContext
             .HasOne(ticket => ticket.AssignedAdmin)
             .WithMany(user => user.AssignedTickets)
             .HasForeignKey(ticket => ticket.AssignedAdminId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<TicketHistoryEntry>()
+            .HasOne(entry => entry.Ticket)
+            .WithMany(ticket => ticket.HistoryEntries)
+            .HasForeignKey(entry => entry.TicketId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<TicketHistoryEntry>()
+            .HasOne(entry => entry.Actor)
+            .WithMany()
+            .HasForeignKey(entry => entry.ActorId)
             .OnDelete(DeleteBehavior.SetNull);
 
         modelBuilder.Entity<RegistrationRequest>()

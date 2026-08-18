@@ -49,6 +49,12 @@ public class TicketService
             CreatedAt = DateTime.UtcNow
         };
 
+        ticket.HistoryEntries.Add(new TicketHistoryEntry
+        {
+            ActorId = authorId,
+            Description = "Ticket created."
+        });
+
         context.Tickets.Add(ticket);
         await context.SaveChangesAsync();
     }
@@ -60,6 +66,12 @@ public class TicketService
         return await context.Tickets
             .AsNoTracking()
             .Include(ticket => ticket.AssignedAdmin)
+            .Include(ticket => ticket.Responses
+                .OrderByDescending(response => response.CreatedAt))
+            .ThenInclude(response => response.Author)
+            .Include(ticket => ticket.HistoryEntries
+                .OrderByDescending(entry => entry.CreatedAt))
+            .ThenInclude(entry => entry.Actor)
             .Where(ticket => ticket.AuthorId == authorId)
             .OrderByDescending(ticket => ticket.CreatedAt)
             .ToListAsync();
@@ -87,6 +99,12 @@ public class TicketService
         return await context.Tickets
             .AsNoTracking()
             .Include(ticket => ticket.Author)
+            .Include(ticket => ticket.Responses
+                .OrderByDescending(response => response.CreatedAt))
+            .ThenInclude(response => response.Author)
+            .Include(ticket => ticket.HistoryEntries
+                .OrderByDescending(entry => entry.CreatedAt))
+            .ThenInclude(entry => entry.Actor)
             .Where(ticket => ticket.Status == TicketStatus.Open)
             .OrderByDescending(ticket => ticket.Priority)
             .ThenBy(ticket => ticket.CreatedAt)
@@ -100,6 +118,12 @@ public class TicketService
         return await context.Tickets
             .AsNoTracking()
             .Include(ticket => ticket.Author)
+            .Include(ticket => ticket.Responses
+                .OrderByDescending(response => response.CreatedAt))
+            .ThenInclude(response => response.Author)
+            .Include(ticket => ticket.HistoryEntries
+                .OrderByDescending(entry => entry.CreatedAt))
+            .ThenInclude(entry => entry.Actor)
             .Where(ticket =>
                 ticket.AssignedAdminId == adminId &&
                 ticket.Status == TicketStatus.InProgress)
@@ -191,6 +215,7 @@ public class TicketService
     public async Task<bool> TakeTicketAsync(int ticketId, int adminId)
     {
         await using var context = await _contextFactory.CreateDbContextAsync();
+        await using var transaction = await context.Database.BeginTransactionAsync();
 
         var changedRows = await context.Tickets
             .Where(ticket =>
@@ -201,7 +226,21 @@ public class TicketService
                 .SetProperty(ticket => ticket.AssignedAdminId, adminId)
                 .SetProperty(ticket => ticket.Status, TicketStatus.InProgress));
 
-        return changedRows == 1;
+        if (changedRows != 1)
+        {
+            await transaction.RollbackAsync();
+            return false;
+        }
+
+        context.TicketHistoryEntries.Add(CreateHistoryEntry(
+            ticketId,
+            adminId,
+            "Status changed from Open to In progress. Ticket assigned to specialist."));
+
+        await context.SaveChangesAsync();
+        await transaction.CommitAsync();
+
+        return true;
     }
 
     public async Task<bool> SetKnowledgeBasePublicationAsync(
@@ -254,8 +293,14 @@ public class TicketService
                 AuthorId = adminId,
                 Message = resolution
             });
-            await context.SaveChangesAsync();
         }
+
+        context.TicketHistoryEntries.Add(CreateHistoryEntry(
+            ticketId,
+            adminId,
+            "Status changed from In progress to Resolved."));
+
+        await context.SaveChangesAsync();
 
         await transaction.CommitAsync();
         return true;
@@ -292,9 +337,61 @@ public class TicketService
             AuthorId = adminId,
             Message = reason
         });
+
+        context.TicketHistoryEntries.Add(CreateHistoryEntry(
+            ticketId,
+            adminId,
+            "Status changed from Open to Declined."));
+
         await context.SaveChangesAsync();
         await transaction.CommitAsync();
 
         return true;
+    }
+
+    public async Task<bool> AddCommentAsync(int ticketId, int authorId, string message)
+    {
+        message = message.Trim();
+
+        if (string.IsNullOrWhiteSpace(message))
+        {
+            return false;
+        }
+
+        await using var context = await _contextFactory.CreateDbContextAsync();
+
+        var canComment = await context.Tickets.AnyAsync(ticket =>
+            ticket.Id == ticketId &&
+            (ticket.AuthorId == authorId || ticket.AssignedAdminId == authorId) &&
+            (ticket.Status == TicketStatus.Open ||
+             ticket.Status == TicketStatus.InProgress));
+
+        if (!canComment)
+        {
+            return false;
+        }
+
+        context.TicketResponses.Add(new TicketResponse
+        {
+            TicketId = ticketId,
+            AuthorId = authorId,
+            Message = message
+        });
+
+        await context.SaveChangesAsync();
+        return true;
+    }
+
+    private static TicketHistoryEntry CreateHistoryEntry(
+        int ticketId,
+        int actorId,
+        string description)
+    {
+        return new TicketHistoryEntry
+        {
+            TicketId = ticketId,
+            ActorId = actorId,
+            Description = description
+        };
     }
 }

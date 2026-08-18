@@ -1,4 +1,3 @@
-﻿
 using HelpDesk_System.Models.Enums;
 
 namespace HelpDesk_System.Models;
@@ -20,11 +19,12 @@ public class Ticket
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-	public int AuthorId { get; set; }
-	public User Author { get; set; } = null!;
+    public int AuthorId { get; set; }
+    public User Author { get; set; } = null!;
 
-	public int? AssignedAdminId { get; set; }
-	public User? AssignedAdmin { get; set; }
+    public int? AssignedAdminId { get; set; }
+    public User? AssignedAdmin { get; set; }
 
-	public List<TicketResponse> Responses { get; set; } = [];
+    public List<TicketResponse> Responses { get; set; } = [];
+    public List<TicketHistoryEntry> HistoryEntries { get; set; } = [];
 }

@@ -61,6 +61,51 @@
             </Button>
         </DataTemplate>
 
+        <DataTemplate x:Key="TicketCommentTemplate">
+            <Border
+                Margin="0,0,0,8"
+                Padding="12"
+                Background="{StaticResource InputBackgroundBrush}"
+                BorderBrush="{StaticResource InputBorderBrush}"
+                BorderThickness="1"
+                CornerRadius="9">
+                <StackPanel>
+                    <TextBlock
+                        Text="{Binding Message}"
+                        Style="{StaticResource DetailValueTextStyle}"/>
+                    <TextBlock Margin="0,7,0,0" Style="{StaticResource SmallMutedTextStyle}">
+                        <Run Text="{Binding Author.FirstName}"/>
+                        <Run Text=" "/>
+                        <Run Text="{Binding Author.LastName}"/>
+                        <Run Text="  •  "/>
+                        <Run Text="{Binding CreatedAt, StringFormat={}{0:dd.MM.yyyy HH:mm}}"/>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+
+        <DataTemplate x:Key="TicketHistoryEntryTemplate">
+            <Border
+                Margin="0,0,0,8"
+                Padding="12"
+                Background="#F8FAFC"
+                CornerRadius="9">
+                <StackPanel>
+                    <TextBlock
+                        Text="{Binding Description}"
+                        Style="{StaticResource DetailValueTextStyle}"/>
+                    <TextBlock Margin="0,7,0,0" Style="{StaticResource SmallMutedTextStyle}">
+                        <Run
+                            Text="{Binding Actor.FirstName, FallbackValue='Former user'}"/>
+                        <Run Text=" "/>
+                        <Run Text="{Binding Actor.LastName}"/>
+                        <Run Text="  •  "/>
+                        <Run Text="{Binding CreatedAt, StringFormat={}{0:dd.MM.yyyy HH:mm}}"/>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+
         <DataTemplate x:Key="RegistrationRequestCardTemplate">
             <Button Style="{StaticResource TicketCardButtonStyle}" Click="RegistrationRequestCard_Click">
                 <Grid>
@@ -624,6 +669,50 @@
                             CornerRadius="10">
                             <TextBlock x:Name="DetailsDescriptionText" Style="{StaticResource DetailValueTextStyle}"/>
                         </Border>
+
+                        <TextBlock
+                            Text="Comments"
+                            Margin="0,18,0,8"
+                            Style="{StaticResource DetailLabelTextStyle}"/>
+                        <ItemsControl
+                            ItemsSource="{Binding Responses}"
+                            ItemTemplate="{StaticResource TicketCommentTemplate}"/>
+                        <TextBlock Text="No comments yet.">
+                            <TextBlock.Style>
+                                <Style
+                                    TargetType="TextBlock"
+                                    BasedOn="{StaticResource SmallMutedTextStyle}">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Responses.Count}" Value="0">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+
+                        <TextBlock
+                            Text="Change history"
+                            Margin="0,18,0,8"
+                            Style="{StaticResource DetailLabelTextStyle}"/>
+                        <ItemsControl
+                            ItemsSource="{Binding HistoryEntries}"
+                            ItemTemplate="{StaticResource TicketHistoryEntryTemplate}"/>
+                        <TextBlock Text="No history entries yet.">
+                            <TextBlock.Style>
+                                <Style
+                                    TargetType="TextBlock"
+                                    BasedOn="{StaticResource SmallMutedTextStyle}">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding HistoryEntries.Count}" Value="0">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
                     </StackPanel>
                 </ScrollViewer>
 
@@ -659,16 +748,25 @@
                     <StackPanel
                         x:Name="AssignedTicketActionsPanel"
                         Visibility="Collapsed">
-                        <Border
-                            Padding="14"
+                        <TextBlock Text="Comment" Style="{StaticResource FieldLabelTextStyle}"/>
+                        <TextBox
+                            x:Name="AdminCommentTextBox"
+                            Margin="0,0,0,10"
+                            Style="{StaticResource WorkspaceTextAreaStyle}"/>
+                        <Button
+                            x:Name="AddAdminCommentButton"
+                            Content="Add comment"
+                            Margin="0,0,0,10"
+                            Style="{StaticResource SecondaryButtonStyle}"
+                            Click="AddAdminCommentButton_Click"/>
+                        <TextBlock
+                            x:Name="TicketCommentErrorText"
                             Margin="0,0,0,14"
-                            Background="#F3F4F6"
-                            CornerRadius="10">
-                            <TextBlock
-                                Text="Add an optional resolution note, then complete the ticket."
-                                TextWrapping="Wrap"
-                                Style="{StaticResource SmallMutedTextStyle}"/>
-                        </Border>
+                            Style="{StaticResource WorkspaceErrorTextStyle}"/>
+                        <TextBlock
+                            x:Name="TicketCommentSuccessText"
+                            Margin="0,0,0,14"
+                            Style="{StaticResource WorkspaceSuccessTextStyle}"/>
                         <TextBlock Text="Resolution note (optional)" Style="{StaticResource FieldLabelTextStyle}"/>
                         <TextBox
                             x:Name="ResolutionTextBox"

@@ -130,6 +130,36 @@ namespace HelpDesk_System.Migrations
                     b.ToTable("Tickets");
                 });
 
+            modelBuilder.Entity("HelpDesk_System.Models.TicketHistoryEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("ActorId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("TicketId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActorId");
+
+                    b.HasIndex("TicketId");
+
+                    b.ToTable("TicketHistoryEntries");
+                });
+
             modelBuilder.Entity("HelpDesk_System.Models.TicketResponse", b =>
                 {
                     b.Property<int>("Id")
@@ -238,8 +268,28 @@ namespace HelpDesk_System.Migrations
                     b.Navigation("Ticket");
                 });
 
+            modelBuilder.Entity("HelpDesk_System.Models.TicketHistoryEntry", b =>
+                {
+                    b.HasOne("HelpDesk_System.Models.User", "Actor")
+                        .WithMany()
+                        .HasForeignKey("ActorId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("HelpDesk_System.Models.Ticket", "Ticket")
+                        .WithMany("HistoryEntries")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Actor");
+
+                    b.Navigation("Ticket");
+                });
+
             modelBuilder.Entity("HelpDesk_System.Models.Ticket", b =>
                 {
+                    b.Navigation("HistoryEntries");
+
                     b.Navigation("Responses");
                 });
 

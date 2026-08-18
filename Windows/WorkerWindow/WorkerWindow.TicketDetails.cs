@@ -21,6 +21,7 @@ public partial class WorkerWindow
     private void ShowTicketDetails(Ticket ticket, bool animate = true)
     {
         _selectedTicket = ticket;
+        TicketDetailsPanel.DataContext = ticket;
         DetailsStatusText.Text = DisplayFormatter.FormatEnum(ticket.Status);
         DetailsTitleText.Text = ticket.Title;
         DetailsPriorityText.Text = DisplayFormatter.FormatEnum(ticket.Priority);
@@ -33,6 +34,10 @@ public partial class WorkerWindow
             : $"{ticket.AssignedAdmin.FirstName} {ticket.AssignedAdmin.LastName}".Trim();
         DetailsDescriptionText.Text = ticket.Description;
 
+        WorkerCommentTextBox.Clear();
+        HideMessage(WorkerCommentErrorText);
+        HideMessage(WorkerCommentSuccessText);
+        ConfigureCommentActions(ticket);
         ConfigureDeleteActions(ticket);
         TicketDetailsPanel.Visibility = Visibility.Visible;
 
@@ -59,6 +64,7 @@ public partial class WorkerWindow
     private void HideTicketDetails()
     {
         _selectedTicket = null;
+        TicketDetailsPanel.DataContext = null;
 
         if (TicketDetailsPanel.Visibility != Visibility.Visible)
         {
@@ -98,6 +104,56 @@ public partial class WorkerWindow
         HideMessage(DeleteTicketErrorText);
         DeleteTicketButton.Visibility = Visibility.Collapsed;
         DeleteTicketConfirmationPanel.Visibility = Visibility.Visible;
+    }
+
+    private async void AddWorkerCommentButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_selectedTicket is null)
+        {
+            return;
+        }
+
+        var comment = WorkerCommentTextBox.Text.Trim();
+        if (string.IsNullOrWhiteSpace(comment))
+        {
+            ShowMessage(WorkerCommentErrorText, "Enter a comment.");
+            return;
+        }
+
+        HideMessage(WorkerCommentErrorText);
+        HideMessage(WorkerCommentSuccessText);
+        AddWorkerCommentButton.IsEnabled = false;
+
+        try
+        {
+            var commentWasAdded = await _ticketService.AddCommentAsync(
+                _selectedTicket.Id,
+                _currentUser.Id,
+                comment);
+
+            if (!commentWasAdded)
+            {
+                await LoadUserTicketsAsync();
+                ShowMessage(
+                    WorkerCommentErrorText,
+                    "The comment could not be added because the ticket state changed.");
+
+                return;
+            }
+
+            await LoadUserTicketsAsync();
+            ShowMessage(WorkerCommentSuccessText, "Comment added.");
+        }
+        catch (Exception exception) when (DatabaseExceptionClassifier.IsDatabaseFailure(exception))
+        {
+            ShowMessage(
+                WorkerCommentErrorText,
+                "The comment could not be added. Check the database connection.");
+        }
+        finally
+        {
+            AddWorkerCommentButton.IsEnabled = true;
+        }
     }
 
     private void CancelDeleteTicketButton_Click(object sender, RoutedEventArgs e)
@@ -160,6 +216,20 @@ public partial class WorkerWindow
         DeleteTicketButton.Visibility = CanCurrentUserDelete(ticket)
             ? Visibility.Visible
             : Visibility.Collapsed;
+    }
+
+    private void ConfigureCommentActions(Ticket ticket)
+    {
+        WorkerCommentActionsPanel.Visibility = CanCurrentUserComment(ticket)
+            ? Visibility.Visible
+            : Visibility.Collapsed;
+    }
+
+    private bool CanCurrentUserComment(Ticket ticket)
+    {
+        return ticket.AuthorId == _currentUser.Id
+            && (ticket.Status == TicketStatus.Open ||
+                ticket.Status == TicketStatus.InProgress);
     }
 
     private bool CanCurrentUserDelete(Ticket ticket)
