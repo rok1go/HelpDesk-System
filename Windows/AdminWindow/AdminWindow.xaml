@@ -487,12 +487,36 @@
             </Border>
 
             <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="6*"/>
                     <ColumnDefinition Width="5*"/>
                 </Grid.ColumnDefinitions>
 
-                <Border Padding="22" Margin="0,0,9,0" Style="{StaticResource WorkspaceCardStyle}">
+                <Grid Grid.ColumnSpan="2" Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock
+                        Text="Search active tickets"
+                        VerticalAlignment="Center"
+                        Style="{StaticResource FieldLabelTextStyle}"/>
+                    <TextBox
+                        x:Name="AdminTicketSearchTextBox"
+                        Grid.Column="1"
+                        Margin="14,0,0,0"
+                        MaxLength="160"
+                        ToolTip="Search by ticket ID, title, description or requester"
+                        Style="{StaticResource WorkspaceTextBoxStyle}"
+                        TextChanged="AdminTicketSearchTextBox_TextChanged"/>
+                </Grid>
+
+                <Border Grid.Row="1" Padding="22" Margin="0,0,9,0" Style="{StaticResource WorkspaceCardStyle}">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -535,7 +559,7 @@
                     </Grid>
                 </Border>
 
-                <Border Grid.Column="1" Padding="22" Margin="9,0,0,0" Style="{StaticResource WorkspaceCardStyle}">
+                <Border Grid.Row="1" Grid.Column="1" Padding="22" Margin="9,0,0,0" Style="{StaticResource WorkspaceCardStyle}">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>

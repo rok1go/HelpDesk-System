@@ -25,34 +25,14 @@ public partial class AdminWindow
             _openTickets = await openTicketsTask;
             _assignedTickets = await assignedTicketsTask;
 
-            OpenTicketsList.ItemsSource = _openTickets;
-            AssignedTicketsList.ItemsSource = _assignedTickets;
-
-            OpenTicketsCountText.Text = DisplayFormatter.FormatCount(
-                _openTickets.Count,
-                "ticket",
-                "tickets");
-
-            AssignedTicketsCountText.Text = DisplayFormatter.FormatCount(
-                _assignedTickets.Count,
-                "ticket",
-                "tickets");
-
-            OpenTicketsEmptyText.Visibility = _openTickets.Count == 0
-                ? Visibility.Visible
-                : Visibility.Collapsed;
-
-            AssignedTicketsEmptyText.Visibility = _assignedTickets.Count == 0
-                ? Visibility.Visible
-                : Visibility.Collapsed;
+            var visibleTickets = ApplyTicketSearch();
 
             if (!selectedTicketId.HasValue)
             {
                 return;
             }
 
-            var currentTicket = _openTickets
-                .Concat(_assignedTickets)
+            var currentTicket = visibleTickets
                 .FirstOrDefault(ticket => ticket.Id == selectedTicketId.Value);
 
             if (currentTicket is null)
@@ -69,6 +49,82 @@ public partial class AdminWindow
             ShowMessage(
                 WorkspaceStatusMessageText,
                 "Tickets could not be loaded. Check the database connection.");
+        }
+    }
+
+    private List<Ticket> ApplyTicketSearch()
+    {
+        var searchText = AdminTicketSearchTextBox.Text.Trim();
+        var searchIsActive = !string.IsNullOrWhiteSpace(searchText);
+
+        var visibleOpenTickets = _openTickets
+            .Where(ticket => MatchesTicketSearch(ticket, searchText))
+            .ToList();
+
+        var visibleAssignedTickets = _assignedTickets
+            .Where(ticket => MatchesTicketSearch(ticket, searchText))
+            .ToList();
+
+        OpenTicketsList.ItemsSource = visibleOpenTickets;
+        AssignedTicketsList.ItemsSource = visibleAssignedTickets;
+
+        OpenTicketsCountText.Text = DisplayFormatter.FormatCount(
+            visibleOpenTickets.Count,
+            "ticket",
+            "tickets");
+
+        AssignedTicketsCountText.Text = DisplayFormatter.FormatCount(
+            visibleAssignedTickets.Count,
+            "ticket",
+            "tickets");
+
+        OpenTicketsEmptyText.Text = searchIsActive
+            ? "No available tickets match your search."
+            : "There are no open tickets.";
+
+        AssignedTicketsEmptyText.Text = searchIsActive
+            ? "No assigned tickets match your search."
+            : "You have not taken any tickets yet.";
+
+        OpenTicketsEmptyText.Visibility = visibleOpenTickets.Count == 0
+            ? Visibility.Visible
+            : Visibility.Collapsed;
+
+        AssignedTicketsEmptyText.Visibility = visibleAssignedTickets.Count == 0
+            ? Visibility.Visible
+            : Visibility.Collapsed;
+
+        return [.. visibleOpenTickets, .. visibleAssignedTickets];
+    }
+
+    private static bool MatchesTicketSearch(Ticket ticket, string searchText)
+    {
+        if (string.IsNullOrWhiteSpace(searchText))
+        {
+            return true;
+        }
+
+        var authorName = $"{ticket.Author.FirstName} {ticket.Author.LastName}";
+
+        return ticket.Id.ToString().Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+               ticket.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+               ticket.Description.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+               authorName.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+               ticket.Author.Email.Contains(searchText, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private void AdminTicketSearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (!IsLoaded)
+        {
+            return;
+        }
+
+        var visibleTickets = ApplyTicketSearch();
+        if (_selectedTicket is not null &&
+            visibleTickets.All(ticket => ticket.Id != _selectedTicket.Id))
+        {
+            HideTicketDetails();
         }
     }
 
