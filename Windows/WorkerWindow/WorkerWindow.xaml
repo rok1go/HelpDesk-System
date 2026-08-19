@@ -604,6 +604,17 @@
                                Margin="0,0,0,10"
                                Style="{StaticResource WorkspaceSuccessTextStyle}"/>
 
+                    <TextBlock x:Name="CloseTicketErrorText"
+                               Margin="0,0,0,10"
+                               Style="{StaticResource WorkspaceErrorTextStyle}"/>
+
+                    <Button x:Name="CloseTicketButton"
+                            Content="Close resolved ticket"
+                            Margin="0,0,0,10"
+                            Style="{StaticResource PrimaryButtonStyle}"
+                            Visibility="Collapsed"
+                            Click="CloseTicketButton_Click"/>
+
                     <TextBlock x:Name="DeleteTicketErrorText"
                                Margin="0,0,0,10"
                                Style="{StaticResource WorkspaceErrorTextStyle}"/>

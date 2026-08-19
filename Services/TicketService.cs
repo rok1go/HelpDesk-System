@@ -306,6 +306,36 @@ public class TicketService
         return true;
     }
 
+    public async Task<bool> CloseResolvedTicketAsync(int ticketId, int authorId)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        await using var transaction = await context.Database.BeginTransactionAsync();
+
+        var changedRows = await context.Tickets
+            .Where(ticket =>
+                ticket.Id == ticketId &&
+                ticket.AuthorId == authorId &&
+                ticket.Status == TicketStatus.Resolved)
+            .ExecuteUpdateAsync(update => update
+                .SetProperty(ticket => ticket.Status, TicketStatus.Closed));
+
+        if (changedRows != 1)
+        {
+            await transaction.RollbackAsync();
+            return false;
+        }
+
+        context.TicketHistoryEntries.Add(CreateHistoryEntry(
+            ticketId,
+            authorId,
+            "Status changed from Resolved to Closed."));
+
+        await context.SaveChangesAsync();
+        await transaction.CommitAsync();
+
+        return true;
+    }
+
     public async Task<bool> DeclineTicketAsync(int ticketId, int adminId, string reason)
     {
         reason = reason.Trim();

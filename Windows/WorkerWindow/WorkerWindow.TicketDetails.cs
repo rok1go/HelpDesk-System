@@ -38,6 +38,7 @@ public partial class WorkerWindow
         HideMessage(WorkerCommentErrorText);
         HideMessage(WorkerCommentSuccessText);
         ConfigureCommentActions(ticket);
+        ConfigureCloseActions(ticket);
         ConfigureDeleteActions(ticket);
         TicketDetailsPanel.Visibility = Visibility.Visible;
 
@@ -209,11 +210,62 @@ public partial class WorkerWindow
         }
     }
 
+    private async void CloseTicketButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_selectedTicket is null || !CanCurrentUserClose(_selectedTicket))
+        {
+            return;
+        }
+
+        var ticketId = _selectedTicket.Id;
+        CloseTicketButton.IsEnabled = false;
+        HideMessage(CloseTicketErrorText);
+        HideTicketListSuccessMessage();
+
+        try
+        {
+            var ticketWasClosed = await _ticketService.CloseResolvedTicketAsync(
+                ticketId,
+                _currentUser.Id);
+
+            if (!ticketWasClosed)
+            {
+                await LoadUserTicketsAsync();
+                ShowWorkspaceStatusMessage(
+                    "The ticket can no longer be closed because its state changed.");
+
+                return;
+            }
+
+            HideTicketDetails();
+            await LoadUserTicketsAsync();
+            ShowTicketListSuccessMessage("Ticket was closed.");
+        }
+        catch (Exception exception) when (DatabaseExceptionClassifier.IsDatabaseFailure(exception))
+        {
+            ShowMessage(
+                CloseTicketErrorText,
+                "The ticket could not be closed. Check the database connection and try again.");
+        }
+        finally
+        {
+            CloseTicketButton.IsEnabled = true;
+        }
+    }
+
     private void ConfigureDeleteActions(Ticket ticket)
     {
         HideMessage(DeleteTicketErrorText);
         DeleteTicketConfirmationPanel.Visibility = Visibility.Collapsed;
         DeleteTicketButton.Visibility = CanCurrentUserDelete(ticket)
+            ? Visibility.Visible
+            : Visibility.Collapsed;
+    }
+
+    private void ConfigureCloseActions(Ticket ticket)
+    {
+        HideMessage(CloseTicketErrorText);
+        CloseTicketButton.Visibility = CanCurrentUserClose(ticket)
             ? Visibility.Visible
             : Visibility.Collapsed;
     }
@@ -237,6 +289,12 @@ public partial class WorkerWindow
         return ticket.AuthorId == _currentUser.Id
             && ticket.Status == TicketStatus.Open
             && ticket.AssignedAdminId is null;
+    }
+
+    private bool CanCurrentUserClose(Ticket ticket)
+    {
+        return ticket.AuthorId == _currentUser.Id
+            && ticket.Status == TicketStatus.Resolved;
     }
 
     private void SetDeleteConfirmationEnabled(bool isEnabled)
