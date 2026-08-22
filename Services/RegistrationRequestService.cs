@@ -165,6 +165,7 @@ public class RegistrationRequestService
                 .SetProperty(registrationRequest => registrationRequest.AssignedRole, assignedRole)
                 .SetProperty(registrationRequest => registrationRequest.ProcessedAt, processedAt)
                 .SetProperty(registrationRequest => registrationRequest.ProcessedByAdminId, adminId)
+                .SetProperty(registrationRequest => registrationRequest.PasswordHash, string.Empty)
                 .SetProperty(registrationRequest => registrationRequest.DecisionReason, (string?)null));
 
         if (updatedRequests == 0)
@@ -217,6 +218,7 @@ public class RegistrationRequestService
                 .SetProperty(request => request.AssignedRole, (UserRole?)null)
                 .SetProperty(request => request.ProcessedAt, processedAt)
                 .SetProperty(request => request.ProcessedByAdminId, adminId)
+                .SetProperty(request => request.PasswordHash, string.Empty)
                 .SetProperty(request => request.DecisionReason, normalizedReason));
 
         return updatedRequests == 1;

@@ -5,6 +5,7 @@
 
     <Application.Resources>
         <converters:EnumDisplayConverter x:Key="EnumDisplayConverter"/>
+        <converters:LocalDateTimeConverter x:Key="LocalDateTimeConverter"/>
 
         <!-- App colours -->
 

@@ -56,7 +56,7 @@
                                    Style="{StaticResource SmallMutedTextStyle}"/>
                         <TextBlock Text="  •  "
                                    Style="{StaticResource SmallMutedTextStyle}"/>
-                        <TextBlock Text="{Binding CreatedAt, StringFormat={}{0:dd.MM.yyyy HH:mm}}"
+                        <TextBlock Text="{Binding CreatedAt, Converter={StaticResource LocalDateTimeConverter}}"
                                    Style="{StaticResource SmallMutedTextStyle}"/>
                     </StackPanel>
                 </Grid>
@@ -79,7 +79,7 @@
                         <Run Text=" "/>
                         <Run Text="{Binding Author.LastName}"/>
                         <Run Text="  •  "/>
-                        <Run Text="{Binding CreatedAt, StringFormat={}{0:dd.MM.yyyy HH:mm}}"/>
+                        <Run Text="{Binding CreatedAt, Converter={StaticResource LocalDateTimeConverter}}"/>
                     </TextBlock>
                 </StackPanel>
             </Border>
@@ -99,7 +99,7 @@
                         <Run Text=" "/>
                         <Run Text="{Binding Actor.LastName}"/>
                         <Run Text="  •  "/>
-                        <Run Text="{Binding CreatedAt, StringFormat={}{0:dd.MM.yyyy HH:mm}}"/>
+                        <Run Text="{Binding CreatedAt, Converter={StaticResource LocalDateTimeConverter}}"/>
                     </TextBlock>
                 </StackPanel>
             </Border>
@@ -136,7 +136,7 @@
                             <TextBlock Text="{Binding Id}" Style="{StaticResource SmallMutedTextStyle}"/>
                             <TextBlock Text="  •  " Style="{StaticResource SmallMutedTextStyle}"/>
                             <TextBlock
-                                Text="{Binding CreatedAt, StringFormat={}{0:dd.MM.yyyy HH:mm}}"
+                                Text="{Binding CreatedAt, Converter={StaticResource LocalDateTimeConverter}}"
                                 Style="{StaticResource SmallMutedTextStyle}"/>
                         </StackPanel>
                     </Grid>
@@ -162,9 +162,9 @@
                         BorderThickness="1"
                         CornerRadius="9">
                         <StackPanel>
-                            <TextBlock Text="Solution" Style="{StaticResource DetailLabelTextStyle}"/>
+                            <TextBlock Text="Latest comment" Style="{StaticResource DetailLabelTextStyle}"/>
                             <TextBlock
-                                Text="{Binding Responses[0].Message, FallbackValue='No solution comment was added.'}"
+                                Text="{Binding Responses[0].Message, FallbackValue='No comment was added.'}"
                                 Style="{StaticResource DetailValueTextStyle}"/>
                         </StackPanel>
                     </Border>

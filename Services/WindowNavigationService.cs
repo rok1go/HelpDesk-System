@@ -9,7 +9,6 @@ namespace HelpDesk_System.Services;
 public class WindowNavigationService
 {
     private readonly IServiceProvider _services;
-    private Window? _activeContentOwner;
 
     public WindowNavigationService(IServiceProvider services)
     {
@@ -48,7 +47,6 @@ public class WindowNavigationService
         var nextContent = nextWindow.Content;
 
         nextWindow.Content = null;
-        _activeContentOwner = nextWindow;
 
         if (resizeHost)
         {

@@ -53,7 +53,7 @@
                             Style="{StaticResource SmallMutedTextStyle}"/>
                         <TextBlock Text="  •  " Style="{StaticResource SmallMutedTextStyle}"/>
                         <TextBlock
-                            Text="{Binding CreatedAt, StringFormat={}{0:dd.MM.yyyy HH:mm}}"
+                            Text="{Binding CreatedAt, Converter={StaticResource LocalDateTimeConverter}}"
                             Style="{StaticResource SmallMutedTextStyle}"/>
                     </StackPanel>
                 </Grid>
@@ -77,7 +77,7 @@
                         <Run Text=" "/>
                         <Run Text="{Binding Author.LastName}"/>
                         <Run Text="  •  "/>
-                        <Run Text="{Binding CreatedAt, StringFormat={}{0:dd.MM.yyyy HH:mm}}"/>
+                        <Run Text="{Binding CreatedAt, Converter={StaticResource LocalDateTimeConverter}}"/>
                     </TextBlock>
                 </StackPanel>
             </Border>
@@ -99,7 +99,7 @@
                         <Run Text=" "/>
                         <Run Text="{Binding Actor.LastName}"/>
                         <Run Text="  •  "/>
-                        <Run Text="{Binding CreatedAt, StringFormat={}{0:dd.MM.yyyy HH:mm}}"/>
+                        <Run Text="{Binding CreatedAt, Converter={StaticResource LocalDateTimeConverter}}"/>
                     </TextBlock>
                 </StackPanel>
             </Border>
@@ -128,7 +128,7 @@
 
                     <TextBlock
                         Grid.Column="1"
-                        Text="{Binding CreatedAt, StringFormat={}{0:dd.MM.yyyy HH:mm}}"
+                        Text="{Binding CreatedAt, Converter={StaticResource LocalDateTimeConverter}}"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Center"
                         Style="{StaticResource SmallMutedTextStyle}"/>
@@ -197,7 +197,7 @@
                             <TextBlock Text="{Binding Id}" Style="{StaticResource SmallMutedTextStyle}"/>
                             <TextBlock Text="  •  " Style="{StaticResource SmallMutedTextStyle}"/>
                             <TextBlock
-                                Text="{Binding CreatedAt, StringFormat={}{0:dd.MM.yyyy HH:mm}}"
+                                Text="{Binding CreatedAt, Converter={StaticResource LocalDateTimeConverter}}"
                                 Style="{StaticResource SmallMutedTextStyle}"/>
                         </StackPanel>
                     </Grid>
@@ -345,7 +345,7 @@
 
                         <TextBlock
                             Grid.Column="1"
-                            Text="{Binding ProcessedAt, StringFormat={}{0:dd.MM.yyyy HH:mm}}"
+                            Text="{Binding ProcessedAt, Converter={StaticResource LocalDateTimeConverter}}"
                             HorizontalAlignment="Right"
                             Style="{StaticResource SmallMutedTextStyle}"/>
                     </Grid>

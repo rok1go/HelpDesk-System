@@ -1,5 +1,7 @@
 using System.Windows;
+using HelpDesk_System.Models;
 using HelpDesk_System.Services;
+using HelpDesk_System.Utilities;
 
 namespace HelpDesk_System.Windows
 {
@@ -47,7 +49,20 @@ namespace HelpDesk_System.Windows
                 return;
             }
 
-            var user = await _authService.LoginAsync(email, password);
+            User? user;
+
+            try
+            {
+                user = await _authService.LoginAsync(email, password);
+            }
+            catch (Exception exception) when (
+                DatabaseExceptionClassifier.IsDatabaseFailure(exception))
+            {
+                PasswordErrorText.Text =
+                    "Login is unavailable. Check the database connection.";
+                PasswordErrorText.Visibility = Visibility.Visible;
+                return;
+            }
 
             if (user == null)
             {
