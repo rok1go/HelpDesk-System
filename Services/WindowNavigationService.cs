@@ -1,5 +1,4 @@
 using System.Windows;
-using System.Windows.Media.Animation;
 using HelpDesk_System.Models;
 using HelpDesk_System.Models.Enums;
 using HelpDesk_System.Windows;
@@ -10,6 +9,7 @@ namespace HelpDesk_System.Services;
 public class WindowNavigationService
 {
     private readonly IServiceProvider _services;
+    private Window? _activeContentOwner;
 
     public WindowNavigationService(IServiceProvider services)
     {
@@ -18,40 +18,56 @@ public class WindowNavigationService
 
     public void OpenRegister(Window currentWindow)
     {
-        SwitchWindow(currentWindow, _services.GetRequiredService<RegisterWindow>(), true);
+        var registerWindow = _services.GetRequiredService<RegisterWindow>();
+        SwitchContent(currentWindow, registerWindow, resizeHost: false);
     }
 
     public void OpenLogin(Window currentWindow)
     {
-        SwitchWindow(currentWindow, _services.GetRequiredService<LoginWindow>(), currentWindow is RegisterWindow);
+        var loginWindow = _services.GetRequiredService<LoginWindow>();
+        var resizeHost = currentWindow is not RegisterWindow;
+
+        SwitchContent(currentWindow, loginWindow, resizeHost);
     }
 
     public void OpenWorkspace(Window currentWindow, User user)
     {
-        Window nextWindow = user.Role == UserRole.Admin
+        Window workspaceWindow = user.Role == UserRole.Admin
             ? ActivatorUtilities.CreateInstance<AdminWindow>(_services, user)
             : ActivatorUtilities.CreateInstance<WorkerWindow>(_services, user);
 
-        SwitchWindow(currentWindow, nextWindow, false);
+        SwitchContent(currentWindow, workspaceWindow, resizeHost: true);
     }
 
-    private static void SwitchWindow(Window currentWindow, Window nextWindow, bool preserveSize)
+    private void SwitchContent(
+        Window currentWindow,
+        Window nextWindow,
+        bool resizeHost)
     {
-        if (preserveSize)
+        var hostWindow = Application.Current.MainWindow ?? currentWindow;
+        var nextContent = nextWindow.Content;
+
+        nextWindow.Content = null;
+        _activeContentOwner = nextWindow;
+
+        if (resizeHost)
         {
-            nextWindow.WindowStartupLocation = WindowStartupLocation.Manual;
-            nextWindow.Left = currentWindow.Left;
-            nextWindow.Top = currentWindow.Top;
-            nextWindow.Width = currentWindow.ActualWidth;
-            nextWindow.Height = currentWindow.ActualHeight;
+            ApplyWindowLayout(hostWindow, nextWindow);
         }
 
-        nextWindow.Opacity = 0;
-        Application.Current.MainWindow = nextWindow;
-        nextWindow.Show();
+        hostWindow.Title = nextWindow.Title;
+        hostWindow.Content = nextContent;
+    }
 
-        var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(160));
-        fadeIn.Completed += (_, _) => currentWindow.Close();
-        nextWindow.BeginAnimation(UIElement.OpacityProperty, fadeIn);
+    private static void ApplyWindowLayout(Window hostWindow, Window sourceWindow)
+    {
+        var centerX = hostWindow.Left + hostWindow.ActualWidth / 2;
+        var centerY = hostWindow.Top + hostWindow.ActualHeight / 2;
+
+        hostWindow.Style = sourceWindow.Style;
+        hostWindow.Width = sourceWindow.Width;
+        hostWindow.Height = sourceWindow.Height;
+        hostWindow.Left = centerX - sourceWindow.Width / 2;
+        hostWindow.Top = centerY - sourceWindow.Height / 2;
     }
 }

@@ -4,7 +4,6 @@
         xmlns:enums="clr-namespace:HelpDesk_System.Models.Enums"
         Title="User workspace"
         Style="{StaticResource WorkspaceWindowStyle}"
-        Loaded="WorkerWindow_Loaded"
         WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
@@ -174,7 +173,8 @@
         </DataTemplate>
     </Window.Resources>
 
-    <Grid Background="{StaticResource WindowBackgroundBrush}">
+    <Grid Background="{StaticResource WindowBackgroundBrush}"
+          Loaded="WorkerWindow_Loaded">
         <Grid Margin="28">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
