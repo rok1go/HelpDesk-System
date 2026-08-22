@@ -17,7 +17,9 @@
 
                     <TextBlock Text="Email" Style="{StaticResource FieldLabelTextStyle}"/>
 
-                    <TextBox x:Name="EmailTextBox" Style="{StaticResource AuthTextBoxStyle}"/>
+                    <TextBox x:Name="EmailTextBox"
+                             MaxLength="80"
+                             Style="{StaticResource AuthTextBoxStyle}"/>
 
                     <TextBlock x:Name="EmailErrorText"
 							   Style="{StaticResource AuthErrorTextStyle}"/>
@@ -27,6 +29,7 @@
 
                     <StackPanel Margin="0,0,0,28">
                         <PasswordBox x:Name="PasswordInput"
+									 MaxLength="64"
 									 Style="{StaticResource AuthPasswordBoxStyle}"/>
 
                         <TextBlock x:Name="PasswordErrorText"

@@ -8,6 +8,10 @@ namespace HelpDesk_System.Services;
 public class RegistrationRequestService
 {
     private const string TextSearchConfiguration = "simple";
+    private const int MaximumNameLength = 40;
+    private const int MaximumEmailLength = 80;
+    private const int MaximumPasswordLength = 64;
+    private const int MaximumDecisionReasonLength = 300;
 
     private readonly IDbContextFactory<HelpDeskDbContext> _contextFactory;
 
@@ -77,7 +81,17 @@ public class RegistrationRequestService
         string password,
         UserRole requestedRole)
     {
+        firstName = firstName.Trim();
+        lastName = lastName.Trim();
         var normalizedEmail = email.Trim().ToLowerInvariant();
+
+        if (firstName.Length > MaximumNameLength ||
+            lastName.Length > MaximumNameLength ||
+            normalizedEmail.Length > MaximumEmailLength ||
+            password.Length > MaximumPasswordLength)
+        {
+            return false;
+        }
 
         await using var context = await _contextFactory.CreateDbContextAsync();
 
@@ -101,8 +115,8 @@ public class RegistrationRequestService
 
         var request = new RegistrationRequest
         {
-            FirstName = firstName.Trim(),
-            LastName = lastName.Trim(),
+            FirstName = firstName,
+            LastName = lastName,
             Email = normalizedEmail,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(password),
             RequestedRole = requestedRole
@@ -182,6 +196,11 @@ public class RegistrationRequestService
         var normalizedReason = reason.Trim();
 
         if (string.IsNullOrWhiteSpace(normalizedReason))
+        {
+            return false;
+        }
+
+        if (normalizedReason.Length > MaximumDecisionReasonLength)
         {
             return false;
         }

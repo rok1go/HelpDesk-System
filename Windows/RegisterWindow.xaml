@@ -23,7 +23,7 @@
                                 Style="{StaticResource FieldLabelTextStyle}"/>
 
                         <TextBox x:Name="FirstNameTextBox"
-                                MaxLength="50"
+                                MaxLength="40"
                                 Style="{StaticResource AuthTextBoxStyle}"/>
 
                         <TextBlock x:Name="FirstNameErrorTextBlock"
@@ -35,7 +35,7 @@
                                 Style="{StaticResource FieldLabelTextStyle}"/>
 
                         <TextBox x:Name="LastNameTextBox"
-                                MaxLength="50"
+                                MaxLength="40"
                                 Style="{StaticResource AuthTextBoxStyle}"/>
 
                         <TextBlock x:Name="LastNameErrorTextBlock"
@@ -47,7 +47,7 @@
                                 Style="{StaticResource FieldLabelTextStyle}"/>
 
                         <TextBox x:Name="EmailTextBox"
-                                MaxLength="100"
+                                MaxLength="80"
                                 Style="{StaticResource AuthTextBoxStyle}"/>
 
                         <TextBlock x:Name="EmailErrorTextBlock"

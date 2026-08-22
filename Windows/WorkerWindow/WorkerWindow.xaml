@@ -269,7 +269,7 @@
                                     <TextBlock Text="Title"
                                                Style="{StaticResource FieldLabelTextStyle}"/>
                                     <TextBox x:Name="TitleTextBox"
-                                             MaxLength="160"
+                                             MaxLength="80"
                                              Style="{StaticResource WorkspaceTextBoxStyle}"/>
                                     <TextBlock x:Name="TitleErrorText"
                                                Margin="0,5,0,0"
@@ -281,7 +281,7 @@
                                                Style="{StaticResource FieldLabelTextStyle}"/>
                                     <TextBox x:Name="DescriptionTextBox"
                                              MinHeight="110"
-                                             MaxLength="4000"
+                                             MaxLength="1000"
                                              Style="{StaticResource WorkspaceTextAreaStyle}"/>
                                     <TextBlock x:Name="DescriptionErrorText"
                                                Margin="0,5,0,0"
@@ -391,7 +391,7 @@
 
                             <TextBox
                                 x:Name="UserTicketSearchTextBox"
-                                MaxLength="160"
+                                MaxLength="80"
                                 ToolTip="Search by ticket ID, title or description"
                                 Style="{StaticResource WorkspaceTextBoxStyle}"
                                 TextChanged="UserTicketSearchTextBox_TextChanged"/>
@@ -590,6 +590,7 @@
                                    Style="{StaticResource FieldLabelTextStyle}"/>
                         <TextBox x:Name="WorkerCommentTextBox"
                                  Margin="0,0,0,10"
+                                 MaxLength="300"
                                  Style="{StaticResource WorkspaceTextAreaStyle}"/>
                         <Button x:Name="AddWorkerCommentButton"
                                 Content="Add comment"
@@ -729,7 +730,7 @@
                         <TextBlock Text="Search solutions"
                                    Style="{StaticResource FieldLabelTextStyle}"/>
                         <TextBox x:Name="WorkerKnowledgeBaseSearchTextBox"
-                                 MaxLength="120"
+                                 MaxLength="80"
                                  ToolTip="Search by ticket ID, problem or solution"
                                  Style="{StaticResource WorkspaceTextBoxStyle}"
                                  TextChanged="WorkerKnowledgeBaseSearchTextBox_TextChanged"/>

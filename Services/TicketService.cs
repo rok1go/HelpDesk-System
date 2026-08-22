@@ -8,6 +8,11 @@ namespace HelpDesk_System.Services;
 public class TicketService
 {
     private const string TextSearchConfiguration = "simple";
+    private const int MaximumTitleLength = 80;
+    private const int MaximumDescriptionLength = 1000;
+    private const int MaximumCommentLength = 300;
+    private const int MaximumResolutionLength = 500;
+    private const int MaximumDeclineReasonLength = 300;
 
     private readonly IDbContextFactory<HelpDeskDbContext> _contextFactory;
     private readonly TicketPriorityCalculator _priorityCalculator;
@@ -31,13 +36,28 @@ public class TicketService
         ArgumentException.ThrowIfNullOrWhiteSpace(title);
         ArgumentException.ThrowIfNullOrWhiteSpace(description);
 
+        title = title.Trim();
+        description = description.Trim();
+
+        if (title.Length > MaximumTitleLength)
+        {
+            throw new ArgumentException("The ticket title is too long.", nameof(title));
+        }
+
+        if (description.Length > MaximumDescriptionLength)
+        {
+            throw new ArgumentException(
+                "The ticket description is too long.",
+                nameof(description));
+        }
+
         await using var context = await _contextFactory.CreateDbContextAsync();
 
         var ticket = new Ticket
         {
             AuthorId = authorId,
-            Title = title.Trim(),
-            Description = description.Trim(),
+            Title = title,
+            Description = description,
             ProblemType = problemType,
             WorkImpact = workImpact,
             AffectedPeople = affectedPeople,
@@ -268,6 +288,11 @@ public class TicketService
     {
         resolution = resolution.Trim();
 
+        if (resolution.Length > MaximumResolutionLength)
+        {
+            return false;
+        }
+
         await using var context = await _contextFactory.CreateDbContextAsync();
         await using var transaction = await context.Database.BeginTransactionAsync();
 
@@ -345,6 +370,11 @@ public class TicketService
             return false;
         }
 
+        if (reason.Length > MaximumDeclineReasonLength)
+        {
+            return false;
+        }
+
         await using var context = await _contextFactory.CreateDbContextAsync();
         await using var transaction = await context.Database.BeginTransactionAsync();
 
@@ -384,6 +414,11 @@ public class TicketService
         message = message.Trim();
 
         if (string.IsNullOrWhiteSpace(message))
+        {
+            return false;
+        }
+
+        if (message.Length > MaximumCommentLength)
         {
             return false;
         }

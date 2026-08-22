@@ -9,8 +9,8 @@ namespace HelpDesk_System.Windows
     public partial class RegisterWindow : Window
     {
         private const int MinimumNameLength = 2;
-        private const int MaximumNameLength = 50;
-        private const int MaximumEmailLength = 100;
+        private const int MaximumNameLength = 40;
+        private const int MaximumEmailLength = 80;
         private const int MinimumPasswordLength = 8;
         private const int MaximumPasswordLength = 64;
         private static readonly TimeSpan SuccessMessageDisplayDuration = TimeSpan.FromSeconds(2);
