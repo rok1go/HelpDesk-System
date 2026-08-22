@@ -1,3 +1,4 @@
+using System.Net.Mail;
 using System.Windows;
 using System.Windows.Controls;
 using HelpDesk_System.Models.Enums;
@@ -8,7 +9,10 @@ namespace HelpDesk_System.Windows
     public partial class RegisterWindow : Window
     {
         private const int MinimumNameLength = 2;
+        private const int MaximumNameLength = 50;
+        private const int MaximumEmailLength = 100;
         private const int MinimumPasswordLength = 8;
+        private const int MaximumPasswordLength = 64;
         private static readonly TimeSpan SuccessMessageDisplayDuration = TimeSpan.FromSeconds(2);
 
         private readonly WindowNavigationService _navigationService;
@@ -150,12 +154,32 @@ namespace HelpDesk_System.Windows
                 return $"The {fieldName} must contain at least {MinimumNameLength} letters.";
             }
 
-            if (name.Any(character => !char.IsLetter(character)))
+            if (name.Length > MaximumNameLength)
             {
-                return $"The {fieldName} can contain letters only.";
+                return $"The {fieldName} cannot exceed {MaximumNameLength} characters.";
+            }
+
+            if (!char.IsLetter(name[0]) ||
+                !char.IsLetter(name[^1]) ||
+                name.Any(character =>
+                    !char.IsLetter(character) && !IsNameSeparator(character)))
+            {
+                return $"The {fieldName} can contain letters, spaces, hyphens and apostrophes.";
+            }
+
+            if (name.Zip(name.Skip(1), (first, second) =>
+                    IsNameSeparator(first) && IsNameSeparator(second))
+                .Any(hasAdjacentSeparators => hasAdjacentSeparators))
+            {
+                return $"The {fieldName} cannot contain repeated separators.";
             }
 
             return null;
+        }
+
+        private static bool IsNameSeparator(char character)
+        {
+            return character is ' ' or '-' or '\'';
         }
 
         private static string? ValidateEmail(string email)
@@ -165,9 +189,34 @@ namespace HelpDesk_System.Windows
                 return "Enter your email.";
             }
 
-            return email.Contains('@')
+            if (email.Length > MaximumEmailLength)
+            {
+                return $"The email cannot exceed {MaximumEmailLength} characters.";
+            }
+
+            var atIndex = email.IndexOf('@');
+            var hasSingleAt = atIndex > 0 &&
+                              atIndex == email.LastIndexOf('@') &&
+                              atIndex < email.Length - 1;
+
+            if (!hasSingleAt || email.Any(char.IsWhiteSpace) || email.Contains(".."))
+            {
+                return "Enter a valid email address, for example name@example.com.";
+            }
+
+            var domain = email[(atIndex + 1)..];
+            var lastDotIndex = domain.LastIndexOf('.');
+            var hasValidDomain = lastDotIndex > 0 &&
+                                 lastDotIndex < domain.Length - 2;
+            var hasValidFormat = MailAddress.TryCreate(email, out var parsedEmail) &&
+                                 string.Equals(
+                                     parsedEmail.Address,
+                                     email,
+                                     StringComparison.OrdinalIgnoreCase);
+
+            return hasValidDomain && hasValidFormat
                 ? null
-                : "The email must contain @.";
+                : "Enter a valid email address, for example name@example.com.";
         }
 
         private static string? ValidatePassword(string password)
@@ -175,6 +224,11 @@ namespace HelpDesk_System.Windows
             if (string.IsNullOrWhiteSpace(password))
             {
                 return "Enter a password.";
+            }
+
+            if (password.Length > MaximumPasswordLength)
+            {
+                return $"The password cannot exceed {MaximumPasswordLength} characters.";
             }
 
             var hasMinimumLength = password.Length >= MinimumPasswordLength;
